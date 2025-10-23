@@ -5,12 +5,14 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.tonapps.blockchain.ton.TonAddressTags
+import com.tonapps.blockchain.ton.TonSendMode
 import com.tonapps.blockchain.ton.contract.WalletFeature
 import com.tonapps.blockchain.ton.extensions.equalsAddress
 import com.tonapps.blockchain.ton.extensions.isValidTonAddress
 import com.tonapps.blockchain.tron.TronTransfer
 import com.tonapps.blockchain.tron.isValidTronAddress
 import com.tonapps.extensions.MutableEffectFlow
+import com.tonapps.extensions.currentTimeSeconds
 import com.tonapps.extensions.filterList
 import com.tonapps.extensions.single
 import com.tonapps.extensions.singleValue
@@ -23,6 +25,7 @@ import com.tonapps.tonkeeper.core.Fee
 import com.tonapps.tonkeeper.core.SendBlockchainException
 import com.tonapps.tonkeeper.core.entities.SendMetadataEntity
 import com.tonapps.tonkeeper.core.entities.TransferEntity
+import com.tonapps.tonkeeper.extensions.getDefaultWalletTransfer
 import com.tonapps.tonkeeper.extensions.isPrintableAscii
 import com.tonapps.tonkeeper.extensions.isSafeModeEnabled
 import com.tonapps.tonkeeper.extensions.toGrams
@@ -38,6 +41,8 @@ import com.tonapps.tonkeeper.ui.screen.send.main.state.SendDestination
 import com.tonapps.tonkeeper.ui.screen.send.main.state.SendFee
 import com.tonapps.tonkeeper.ui.screen.send.main.state.SendTransaction
 import com.tonapps.tonkeeper.ui.screen.send.main.state.TonTransaction
+import com.tonapps.tonkeeper.usecase.emulation.EmulationUseCase
+import com.tonapps.tonkeeper.usecase.emulation.InsufficientBalanceError
 import com.tonapps.tonkeeper.usecase.sign.SignUseCase
 import com.tonapps.wallet.api.API
 import com.tonapps.wallet.api.SendBlockchainState
@@ -52,6 +57,7 @@ import com.tonapps.wallet.data.battery.BatteryRepository
 import com.tonapps.wallet.data.battery.entity.BatteryBalanceEntity
 import com.tonapps.wallet.data.collectibles.CollectiblesRepository
 import com.tonapps.wallet.data.collectibles.entities.NftEntity
+import com.tonapps.wallet.data.core.entity.RawMessageEntity
 import com.tonapps.wallet.data.purchase.PurchaseRepository
 import com.tonapps.wallet.data.rates.RatesRepository
 import com.tonapps.wallet.data.settings.BatteryTransaction
@@ -112,8 +118,8 @@ class SendViewModel(
     private val collectiblesRepository: CollectiblesRepository,
     private val batteryRepository: BatteryRepository,
     private val transactionManager: TransactionManager,
+    private val emulationUseCase: EmulationUseCase,
     private val signUseCase: SignUseCase,
-    private val purchaseRepository: PurchaseRepository,
     private val analytics: AnalyticsHelper
 ) : BaseWalletVM(app) {
 
@@ -377,7 +383,8 @@ class SendViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TonTransaction.Amount())
 
-    private val preferredFeeMethodFlow = MutableStateFlow(settingsRepository.getPreferredFeeMethod(wallet.id))
+    private val preferredFeeMethodFlow =
+        MutableStateFlow(settingsRepository.getPreferredFeeMethod(wallet.id))
 
     private val _tronResourcesFlow = MutableStateFlow<TronResourcesEntity?>(null)
     private val tronResourcesFlow =
@@ -531,75 +538,30 @@ class SendViewModel(
 
     private fun showIfInsufficientBalance(onContinue: () -> Unit) {
         viewModelScope.launch(Dispatchers.Main) {
-            val type = userInputFlow.value.type
-            val isDirectTransferType = type == SendScreen.Companion.Type.Direct
-            val tonBalance = getTONBalance()
-            val token = selectedTokenFlow.value
-            val tokenBalance = token.balance.value
-            val tokenAmount = getTokenAmount()
             val fee = _feeFlow.value!!
-            if (token.isTon && fee is SendFee.Ton) {
-                if (!isDirectTransferType && (tokenAmount == tonBalance || userInputFlow.value.max)) {
-                    onContinue()
-                } else {
-                    val totalAmount = tokenAmount + fee.amount.value
-                    val insufficientBalanceType = when {
-                        tonBalance.isZero -> InsufficientBalanceType.EmptyBalance
-                        tokenAmount > tonBalance -> InsufficientBalanceType.InsufficientTONBalance
-                        totalAmount > tonBalance -> InsufficientBalanceType.InsufficientBalanceForFee
-                        else -> null
-                    }
-                    if (insufficientBalanceType == null) {
-                        onContinue()
-                    } else {
-                        showInsufficientBalance(
-                            tonBalance = Amount(tonBalance),
-                            balance = Amount(tonBalance),
-                            amount = Amount(tokenAmount),
-                            fee = fee.amount,
-                            type = insufficientBalanceType
-                        )
-                    }
-                }
-            } else if (isNft) {
-                if (fee is SendFee.Ton && fee.amount.value > tonBalance) {
-                    showInsufficientBalance(
-                        tonBalance = Amount(tonBalance),
-                        balance = Amount(tonBalance),
-                        amount = Amount(),
-                        fee = fee.amount,
-                        type = InsufficientBalanceType.InsufficientBalanceForFee
-                    )
-                } else {
-                    onContinue()
-                }
+            val transfer = tonTransferFlow.value!!
+
+            if (fee is SendFee.Ton && fee.error is InsufficientBalanceError) {
+                showInsufficientBalance(
+                    type = InsufficientBalanceType.InsufficientTONBalance,
+                    amount = Amount(value = fee.error.totalAmount),
+                    balance = Amount(value = fee.error.accountBalance),
+                )
+            } else if (fee is SendFee.Gasless && !transfer.max && fee.amount.value + transfer.amount > transfer.token.value) {
+                showInsufficientBalance(
+                    type = InsufficientBalanceType.InsufficientGaslessBalance,
+                    amount = Amount(value = fee.amount.value + transfer.amount, token = transfer.token.token),
+                    balance = Amount(value = transfer.token.value, token = transfer.token.token),
+                    gaslessFee = fee.amount.value
+                )
+            } else if (!transfer.isTon && !transfer.isNft && transfer.amount > transfer.token.value) {
+                showInsufficientBalance(
+                    type = InsufficientBalanceType.InsufficientJettonBalance,
+                    amount = Amount(value = transfer.amount, token = transfer.token.token),
+                    balance = Amount(value = transfer.token.value, token = transfer.token.token),
+                )
             } else {
-                val insufficientBalanceType = when {
-                    tokenBalance.isZero -> InsufficientBalanceType.EmptyJettonBalance
-                    fee is SendFee.Gasless && (isDirectTransferType || tokenAmount.toGrams() != tokenBalance.toGrams()) && fee.amount.value + tokenAmount > tokenBalance -> InsufficientBalanceType.InsufficientGaslessBalance
-                    fee is SendFee.Gasless && fee.amount.value > tokenBalance -> InsufficientBalanceType.InsufficientGaslessBalance
-                    tokenAmount > tokenBalance -> InsufficientBalanceType.InsufficientJettonBalance
-                    fee is SendFee.Ton && fee.amount.value + TransferEntity.BASE_FORWARD_AMOUNT > tonBalance -> InsufficientBalanceType.InsufficientBalanceForFee
-                    else -> null
-                }
-                if (fee is SendFee.Gasless && insufficientBalanceType == InsufficientBalanceType.InsufficientBalanceForFee) {
-                    onContinue()
-                } else if (insufficientBalanceType != null) {
-                    showInsufficientBalance(
-                        tonBalance = Amount(tonBalance),
-                        balance = Amount(tokenBalance, token.token),
-                        amount = Amount(tokenAmount, token.token),
-                        fee = if (fee is SendFee.Ton) {
-                            fee.amount
-                        } else Fee(0L),
-                        gaslessFee = if (fee is SendFee.Gasless) {
-                            fee.amount.value
-                        } else Coins.ZERO,
-                        type = insufficientBalanceType,
-                    )
-                } else {
-                    onContinue()
-                }
+                onContinue()
             }
         }
     }
@@ -617,10 +579,8 @@ class SendViewModel(
     }
 
     private suspend fun showInsufficientBalance(
-        tonBalance: Amount,
         balance: Amount,
         amount: Amount,
-        fee: Fee,
         gaslessFee: Coins = Coins.ZERO,
         type: InsufficientBalanceType,
     ) {
@@ -633,18 +593,6 @@ class SendViewModel(
         val batteryEnabled = !isBatteryDisabled && settingsRepository.batteryIsEnabledTx(
             wallet.accountId, txType
         )
-        val required = when (type) {
-            InsufficientBalanceType.InsufficientGaslessBalance -> Amount(gaslessFee, amount.token)
-            InsufficientBalanceType.InsufficientJettonBalance, InsufficientBalanceType.EmptyJettonBalance -> amount
-            InsufficientBalanceType.InsufficientTONBalance, InsufficientBalanceType.EmptyBalance -> amount
-            InsufficientBalanceType.InsufficientBalanceForFee -> Amount(fee.fee)
-            else -> Amount(fee.fee + amount.value, amount.token)
-        }
-
-        val showBalance = when (type) {
-            InsufficientBalanceType.InsufficientBalanceForFee -> tonBalance
-            else -> balance
-        }
 
         var withRechargeBattery = batteryEnabled && batteryBalance.balance.value == BigDecimal.ZERO
         if (withRechargeBattery && type.isEmptyBalance()) {
@@ -656,8 +604,8 @@ class SendViewModel(
 
         _uiInsufficientBalanceFlow.tryEmit(
             SendEvent.InsufficientBalance(
-                balance = showBalance,
-                required = required,
+                balance = balance,
+                required = amount,
                 withRechargeBattery = withRechargeBattery,
                 singleWallet = 1 >= getWalletCount(),
                 type = type
@@ -732,8 +680,10 @@ class SendViewModel(
     private suspend fun buildTronTransfer(): TronTransfer {
         val token = selectedTokenFlow.value
         val transferAmount = transferAmountFlow.value
-        val destination = destinationFlow.value as? SendDestination.TronAccount ?: throw IllegalStateException("Destination is not TronAccount")
-        val tronAddress = accountRepository.getTronAddress(wallet.id) ?: throw IllegalStateException("Tron address not found")
+        val destination = destinationFlow.value as? SendDestination.TronAccount
+            ?: throw IllegalStateException("Destination is not TronAccount")
+        val tronAddress = accountRepository.getTronAddress(wallet.id)
+            ?: throw IllegalStateException("Tron address not found")
         return TronTransfer(
             from = tronAddress,
             to = destination.address,
@@ -750,7 +700,9 @@ class SendViewModel(
 
         val userInput = userInputFlow.value
         val comment = userInput.comment?.ifBlank { null }
-        val destination = destinationFlow.filter { it is SendDestination.TonAccount }.singleValue(3.seconds) as? SendDestination.TonAccount ?: throw IllegalStateException("Destination is not TonAccount")
+        val destination = destinationFlow.filter { it is SendDestination.TonAccount }
+            .singleValue(3.seconds) as? SendDestination.TonAccount
+            ?: throw IllegalStateException("Destination is not TonAccount")
         val token = selectedTokenFlow.value
         val customPayload = getTokenCustomPayload(token.balance.token)
         val sendMetadata = getSendParams(wallet)
@@ -867,7 +819,7 @@ class SendViewModel(
 
         val tonDeferred = async { calculateFeeDefault(transfer) }
         val gaslessDeferred = async {
-            if (isSupportsGasless && tonProofToken != null && excessesAddress != null) {
+            if (isSupportsGasless) {
                 calculateFeeGasless(
                     transfer,
                     excessesAddress,
@@ -886,15 +838,9 @@ class SendViewModel(
         gaslessFee = gaslessDeferred.await()
         batteryFee = batteryDeferred.await()
 
-        val tonBalance = getTONBalance()
-
-        val enoughTonBalance = if (transfer.isTon) {
-            transfer.max || (tonBalance >= tonFeeResult.amount.value + transfer.amount)
+        if (tonFeeResult.error is InsufficientBalanceError) {
+            tonFee = null
         } else {
-            tonBalance >= tonFeeResult.amount.value
-        }
-
-        if (enoughTonBalance) {
             tonFee = tonFeeResult
         }
 
@@ -913,7 +859,7 @@ class SendViewModel(
         // unspecified preferred fee method logic
         if (batteryFee != null) {
             return@withContext batteryFee!!
-        } else if (gaslessFee != null && !enoughTonBalance) {
+        } else if (gaslessFee != null && tonFee == null) {
             return@withContext gaslessFee!!
         }
 
@@ -1038,21 +984,43 @@ class SendViewModel(
         }
     }
 
+    private suspend fun getJettonTransferAmount(
+        transfer: TransferEntity,
+    ): Coins {
+        try {
+            val message = transfer.signForEstimation(
+                internalMessage = false, jettonTransferAmount = TransferEntity.ONE_TON
+            )
+            // Emulate with higher balance to calculate fair amount to send
+            val emulated = api.emulate(
+                cell = message,
+                testnet = transfer.wallet.testnet,
+                address = transfer.wallet.accountId,
+                balance = (Coins.ONE + Coins.ONE).toLong(),
+                safeModeEnabled = settingsRepository.isSafeModeEnabled(api)
+            )
+            val fee = Fee(emulated?.event?.extra ?: 0L)
+
+            return if (fee.isRefund) {
+                TransferEntity.BASE_FORWARD_AMOUNT
+            } else {
+                fee.value + TransferEntity.BASE_FORWARD_AMOUNT
+            }
+        } catch (_: Throwable) {
+            return TransferEntity.POINT_ONE_TON
+        }
+    }
+
     private suspend fun calculateFeeDefault(
         transfer: TransferEntity,
     ): SendFee.Ton {
-        val message = transfer.signForEstimation(
-            internalMessage = false, jettonTransferAmount = TransferEntity.ONE_TON
+        val jettonTransferAmount = getJettonTransferAmount(transfer)
+        val emulated = emulationUseCase(
+            message = transfer.getEmulationBody(jettonTransferAmount),
+            params = true,
+            checkTonBalance = !transfer.isTon || !transfer.max,
         )
-        // Emulate with higher balance to calculate fair amount to send
-        val emulated = api.emulate(
-            cell = message,
-            testnet = transfer.wallet.testnet,
-            address = transfer.wallet.accountId,
-            balance = (Coins.ONE + Coins.ONE).toLong(),
-            safeModeEnabled = settingsRepository.isSafeModeEnabled(api)
-        )
-        val extra = emulated?.event?.extra ?: 0
+        val extra = emulated.extra.value.toLong()
 
         val fee = Fee(extra)
         val rates = ratesRepository.getTONRates(currency)
@@ -1062,7 +1030,8 @@ class SendViewModel(
             amount = fee,
             fiatAmount = converted,
             fiatCurrency = currency,
-            extra = extra
+            extra = extra,
+            error = emulated.error
         )
     }
 
@@ -1071,24 +1040,6 @@ class SendViewModel(
         fee: SendFee,
     ): SendEvent.Fee? {
         return try {
-            val tonBalance = getTONBalance()
-
-            var insufficientFunds =
-                transfer.token.value.isZero || transfer.amount > transfer.token.value
-
-            if (!insufficientFunds && transfer.isTon && fee is SendFee.Ton) {
-                insufficientFunds = !transfer.max &&
-                        (fee.amount.value + transfer.amount > tonBalance)
-            } else if (!insufficientFunds && fee is SendFee.Ton) {
-                insufficientFunds = fee.amount.value > tonBalance
-            } else if (!insufficientFunds && fee is SendFee.Gasless) {
-                insufficientFunds = if (transfer.max) {
-                    fee.amount.value > transfer.token.value
-                } else {
-                    fee.amount.value + transfer.amount > transfer.token.value
-                }
-            }
-
             val showToggle = feeOptions.size > 1
 
             SendEvent.Fee(
@@ -1107,7 +1058,7 @@ class SendViewModel(
                     )
                 } else "",
                 showToggle = showToggle,
-                insufficientFunds = insufficientFunds,
+                insufficientFunds = false,
                 failed = false
             )
         } catch (e: Throwable) {
@@ -1203,7 +1154,10 @@ class SendViewModel(
 
         val tonTx = _tonTransferFlow.value ?: return
         viewModelScope.launch(Dispatchers.IO) {
-            checkTonFee(tonTx)
+            _feeFlow.tryEmit(fee)
+            eventFee(tonTx, fee)?.let {
+                _uiFeeFlow.tryEmit(it)
+            }
         }
     }
 
@@ -1338,9 +1292,11 @@ class SendViewModel(
     }
 
     private suspend fun signTron() {
-        val transfer = tronTransferFlow.value ?: throw IllegalStateException("Tron transfer is null")
+        val transfer =
+            tronTransferFlow.value ?: throw IllegalStateException("Tron transfer is null")
         val transaction = api.tron.buildSmartContractTransaction(transfer).extendExpiration()
-        val resources = _tronResourcesFlow.value ?: throw IllegalStateException("Tron resources is null")
+        val resources =
+            _tronResourcesFlow.value ?: throw IllegalStateException("Tron resources is null")
 
         val signedTransaction = signUseCase(
             context = context,
@@ -1348,7 +1304,8 @@ class SendViewModel(
             transaction = transaction,
         )
 
-        val tonProofToken = accountRepository.requestTonProofToken(wallet) ?: throw IllegalStateException("TonProofToken is null")
+        val tonProofToken = accountRepository.requestTonProofToken(wallet)
+            ?: throw IllegalStateException("TonProofToken is null")
 
         api.tron.sendTransaction(
             transaction = signedTransaction,

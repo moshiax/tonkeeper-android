@@ -25,6 +25,7 @@ import com.tonapps.tonkeeper.ui.screen.send.main.state.SendFee
 import com.tonapps.tonkeeper.usecase.emulation.Emulated
 import com.tonapps.tonkeeper.usecase.emulation.Emulated.Companion.buildFee
 import com.tonapps.tonkeeper.usecase.emulation.EmulationUseCase
+import com.tonapps.tonkeeper.usecase.emulation.InsufficientBalanceError
 import com.tonapps.tonkeeper.usecase.sign.SignUseCase
 import com.tonapps.wallet.api.API
 import com.tonapps.wallet.api.APIException
@@ -116,7 +117,8 @@ class SendTransactionViewModel(
                         message = message!!,
                         useBattery = false,
                         forceRelayer = false,
-                        params = !request.ignoreInsufficientBalance
+                        params = !request.ignoreInsufficientBalance,
+                        checkTonBalance = true,
                     )
                 }
 
@@ -144,26 +146,21 @@ class SendTransactionViewModel(
                 }
 
                 val tonEmulated = tonDeferred.await()
-                val tonBalance = getTONBalance()
-                val transferTonTotal = tonEmulated.totalTon + tonEmulated.totalFees
 
                 emulationReadyDate.set(System.currentTimeMillis())
 
-                if (transferTonTotal > tonBalance) {
-                    if (batteryDetails == null && !request.ignoreInsufficientBalance) {
-                        _stateFlow.value = SendTransactionState.InsufficientBalance(
-                            wallet = wallet,
-                            balance = Amount(tonBalance),
-                            required = Amount(transferTonTotal),
-                            withRechargeBattery = forceRelayer || useBattery,
-                            singleWallet = isSingleWallet(),
-                            type = InsufficientBalanceType.InsufficientTONBalance
-                        )
-
-                        return@launch
-                    }
-
+                if (tonEmulated.failed && tonEmulated.error is InsufficientBalanceError && batteryDetails == null && !request.ignoreInsufficientBalance) {
                     tonDetails = null
+                    _stateFlow.value = SendTransactionState.InsufficientBalance(
+                        wallet = wallet,
+                        balance = Amount(tonEmulated.error.accountBalance),
+                        required = Amount(tonEmulated.error.totalAmount),
+                        withRechargeBattery = forceRelayer || useBattery,
+                        singleWallet = isSingleWallet(),
+                        type = InsufficientBalanceType.InsufficientTONBalance
+                    )
+
+                    return@launch
                 } else {
                     tonDetails = createDetails(tonEmulated)
                 }

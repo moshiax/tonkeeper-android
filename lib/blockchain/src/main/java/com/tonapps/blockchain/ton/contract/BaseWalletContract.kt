@@ -305,4 +305,14 @@ abstract class BaseWalletContract(
             storeMaybeStringTail(appliedPromo)
         }
     }
+
+    fun getOutMsgs(vararg gifts: WalletTransfer): List<Cell> {
+        val outMsgs = mutableListOf<Cell>()
+        for (gift in gifts) {
+            outMsgs.add(
+                MessageRelaxed.tlbCodec(AnyTlbConstructor).createCell(createIntMsg(gift))
+            )
+        }
+        return outMsgs
+    }
 }

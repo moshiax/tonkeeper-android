@@ -26,7 +26,8 @@ data class Emulated(
     val total: Total,
     val extra: Extra,
     val currency: WalletCurrency,
-    val failed: Boolean = false
+    val failed: Boolean = false,
+    val error: Throwable? = null,
 ) {
 
     companion object {

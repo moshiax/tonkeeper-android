@@ -31,4 +31,8 @@ data class MessageBodyEntity(
             body = unsignedBody
         )
     }
+
+    fun getOutMsgs(): List<Cell> {
+        return wallet.contract.getOutMsgs(gifts = transfers.toTypedArray())
+    }
 }

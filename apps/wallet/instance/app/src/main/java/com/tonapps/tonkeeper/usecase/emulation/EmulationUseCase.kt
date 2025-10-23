@@ -36,10 +36,13 @@ class EmulationUseCase(
     private val tokenRepository: TokenRepository,
 ) {
 
+    private val contractExecution = EmulationContractExecution(api)
+
     suspend operator fun invoke(
         message: MessageBodyEntity,
         useBattery: Boolean = false,
         forceRelayer: Boolean = false,
+        checkTonBalance: Boolean = false,
         params: Boolean = false,
     ): Emulated {
         return try {
@@ -49,7 +52,7 @@ class EmulationUseCase(
                     forceRelayer = forceRelayer,
                 )
             } else {
-                emulate(message, params)
+                emulate(message, params, checkTonBalance)
             }
         } catch (e: Throwable) {
             Emulated(
@@ -58,7 +61,8 @@ class EmulationUseCase(
                 extra = Emulated.defaultExtra,
                 currency = settingsRepository.currency,
                 failed = true,
-                type = TransferType.Default
+                type = TransferType.Default,
+                error = e,
             )
         }
     }
@@ -98,9 +102,25 @@ class EmulationUseCase(
         return parseEmulated(wallet, consequences, TransferType.Battery)
     }
 
-    private suspend fun emulate(message: MessageBodyEntity, params: Boolean): Emulated {
+    private suspend fun emulate(
+        message: MessageBodyEntity,
+        params: Boolean,
+        checkTonBalance: Boolean
+    ): Emulated {
         val wallet = message.wallet
         val boc = createMessage(message, false)
+
+        if (checkTonBalance) {
+            val account = api.accounts(wallet.testnet).getAccount(wallet.accountId)
+            val accountBalance = Coins.of(account.balance)
+            val totalFee = contractExecution.computeFee(wallet, account, boc, message.getOutMsgs())
+            val totalAmount =
+                totalFee + message.transfers.sumOf { Coins.of(it.coins.coins.toString()) }
+            if (totalAmount > accountBalance) {
+                throw InsufficientBalanceError(accountBalance, totalAmount)
+            }
+        }
+
         val consequences = (if (params) {
             api.emulate(
                 cell = boc,
