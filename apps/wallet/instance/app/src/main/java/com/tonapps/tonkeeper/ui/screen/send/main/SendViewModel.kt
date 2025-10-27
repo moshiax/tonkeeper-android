@@ -5,16 +5,13 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.tonapps.blockchain.ton.TonAddressTags
-import com.tonapps.blockchain.ton.TonSendMode
 import com.tonapps.blockchain.ton.contract.WalletFeature
 import com.tonapps.blockchain.ton.extensions.equalsAddress
 import com.tonapps.blockchain.ton.extensions.isValidTonAddress
 import com.tonapps.blockchain.tron.TronTransfer
 import com.tonapps.blockchain.tron.isValidTronAddress
 import com.tonapps.extensions.MutableEffectFlow
-import com.tonapps.extensions.currentTimeSeconds
 import com.tonapps.extensions.filterList
-import com.tonapps.extensions.single
 import com.tonapps.extensions.singleValue
 import com.tonapps.extensions.state
 import com.tonapps.icu.Coins
@@ -25,10 +22,8 @@ import com.tonapps.tonkeeper.core.Fee
 import com.tonapps.tonkeeper.core.SendBlockchainException
 import com.tonapps.tonkeeper.core.entities.SendMetadataEntity
 import com.tonapps.tonkeeper.core.entities.TransferEntity
-import com.tonapps.tonkeeper.extensions.getDefaultWalletTransfer
 import com.tonapps.tonkeeper.extensions.isPrintableAscii
 import com.tonapps.tonkeeper.extensions.isSafeModeEnabled
-import com.tonapps.tonkeeper.extensions.toGrams
 import com.tonapps.tonkeeper.extensions.with
 import com.tonapps.tonkeeper.manager.tx.TransactionManager
 import com.tonapps.tonkeeper.ui.base.BaseWalletVM
@@ -46,8 +41,8 @@ import com.tonapps.tonkeeper.usecase.emulation.InsufficientBalanceError
 import com.tonapps.tonkeeper.usecase.sign.SignUseCase
 import com.tonapps.wallet.api.API
 import com.tonapps.wallet.api.SendBlockchainState
-import com.tonapps.wallet.api.entity.value.Blockchain
 import com.tonapps.wallet.api.entity.TokenEntity
+import com.tonapps.wallet.api.entity.value.Blockchain
 import com.tonapps.wallet.api.tron.entity.TronResourcesEntity
 import com.tonapps.wallet.data.account.AccountRepository
 import com.tonapps.wallet.data.account.Wallet
@@ -57,8 +52,6 @@ import com.tonapps.wallet.data.battery.BatteryRepository
 import com.tonapps.wallet.data.battery.entity.BatteryBalanceEntity
 import com.tonapps.wallet.data.collectibles.CollectiblesRepository
 import com.tonapps.wallet.data.collectibles.entities.NftEntity
-import com.tonapps.wallet.data.core.entity.RawMessageEntity
-import com.tonapps.wallet.data.purchase.PurchaseRepository
 import com.tonapps.wallet.data.rates.RatesRepository
 import com.tonapps.wallet.data.settings.BatteryTransaction
 import com.tonapps.wallet.data.settings.SettingsRepository
@@ -70,22 +63,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
@@ -101,7 +90,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import java.util.concurrent.CancellationException
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.seconds
 
@@ -155,7 +143,6 @@ class SendViewModel(
     private val userInputFlow = _userInputFlow.asStateFlow()
 
     private var lastTransferEntity: TransferEntity? = null
-    private val lastRawExtra: AtomicLong = AtomicLong(0)
     private var tokenCustomPayload: TokenEntity.TransferPayload? = null
 
     private val userInputAddressFlow = userInputFlow.map { it.address }.distinctUntilChanged()
@@ -530,10 +517,6 @@ class SendViewModel(
             testnet = wallet.testnet,
             tonAddressTags = tonAddressTags
         )
-    }
-
-    private fun getFee(): Fee {
-        return Fee(lastRawExtra.get())
     }
 
     private fun showIfInsufficientBalance(onContinue: () -> Unit) {
@@ -1020,17 +1003,13 @@ class SendViewModel(
             params = true,
             checkTonBalance = !transfer.isTon || !transfer.max,
         )
-        val extra = emulated.extra.value.toLong()
 
-        val fee = Fee(extra)
-        val rates = ratesRepository.getTONRates(currency)
-        val converted = rates.convertTON(fee.value)
+        val fee = Fee( emulated.extra.value,  emulated.extra.isRefund)
 
         return SendFee.Ton(
             amount = fee,
-            fiatAmount = converted,
+            fiatAmount = emulated.extra.fiat,
             fiatCurrency = currency,
-            extra = extra,
             error = emulated.error
         )
     }
@@ -1186,7 +1165,7 @@ class SendViewModel(
             val batteryCharges = getBatteryCharges()
             val batteryConfig = batteryRepository.getConfig(wallet.testnet)
             val txCharges = BatteryMapper.calculateChargesAmount(
-                getFee().value.value,
+                fee.extra.toBigDecimal(),
                 batteryConfig.chargeCost
             )
             if (txCharges > batteryCharges) {

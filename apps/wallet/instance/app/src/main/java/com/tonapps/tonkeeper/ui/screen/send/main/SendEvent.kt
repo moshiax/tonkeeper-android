@@ -27,7 +27,6 @@ sealed class SendEvent {
     data class Fee(
         val fee: SendFee = SendFee.Ton(
             amount = Fee(0L),
-            extra = 0L,
             fiatAmount = Coins.ZERO,
             fiatCurrency = WalletCurrency.DEFAULT
         ),

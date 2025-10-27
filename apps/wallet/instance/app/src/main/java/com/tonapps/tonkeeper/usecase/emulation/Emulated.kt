@@ -59,13 +59,10 @@ data class Emulated(
                 val fee = Fee(extra.value, extra.isRefund)
                 val rates = ratesRepository.getTONRates(currency)
                 val converted = rates.convertTON(fee.value)
-                val totalFees = consequences?.trace?.transaction?.totalFees ?: 0
                 SendFee.Ton(
                     amount = fee,
                     fiatAmount = converted,
                     fiatCurrency = currency,
-                    // extra = consequences?.event?.extra ?: 0
-                    extra = totalFees
                 )
             }
         }

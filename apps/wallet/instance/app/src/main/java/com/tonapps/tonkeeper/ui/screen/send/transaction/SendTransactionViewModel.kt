@@ -1,23 +1,17 @@
 package com.tonapps.tonkeeper.ui.screen.send.transaction
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.google.common.util.concurrent.AtomicDouble
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.tonapps.blockchain.ton.extensions.EmptyPrivateKeyEd25519
 import com.tonapps.blockchain.ton.extensions.base64
-import com.tonapps.blockchain.ton.extensions.equalsAddress
-import com.tonapps.blockchain.ton.extensions.toRawAddress
 import com.tonapps.icu.Coins
 import com.tonapps.ledger.ton.Transaction
 import com.tonapps.tonkeeper.core.Amount
 import com.tonapps.tonkeeper.core.AnalyticsHelper
-import com.tonapps.tonkeeper.core.Fee
 import com.tonapps.tonkeeper.core.history.HistoryHelper
 import com.tonapps.tonkeeper.extensions.getTransfers
 import com.tonapps.tonkeeper.helper.BatteryHelper
-import com.tonapps.tonkeeper.manager.assets.AssetsManager
 import com.tonapps.tonkeeper.manager.tx.TransactionManager
 import com.tonapps.tonkeeper.ui.base.BaseWalletVM
 import com.tonapps.tonkeeper.ui.screen.send.main.helper.InsufficientBalanceType
@@ -34,10 +28,8 @@ import com.tonapps.wallet.api.getDebugMessage
 import com.tonapps.wallet.data.account.AccountRepository
 import com.tonapps.wallet.data.account.entities.MessageBodyEntity
 import com.tonapps.wallet.data.account.entities.WalletEntity
-import com.tonapps.wallet.data.battery.BatteryMapper
 import com.tonapps.wallet.data.battery.BatteryRepository
 import com.tonapps.wallet.data.core.entity.SignRequestEntity
-import com.tonapps.wallet.data.events.EventsRepository
 import com.tonapps.wallet.data.rates.RatesRepository
 import com.tonapps.wallet.data.settings.BatteryTransaction
 import com.tonapps.wallet.data.settings.SettingsRepository
@@ -45,21 +37,17 @@ import com.tonapps.wallet.data.settings.entities.PreferredFeeMethod
 import com.tonapps.wallet.data.token.TokenRepository
 import com.tonapps.wallet.data.token.entities.AccountTokenEntity
 import com.tonapps.wallet.localization.Localization
-import io.tonapi.models.JettonVerificationType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.ton.cell.Cell
 import org.ton.contract.wallet.WalletTransfer
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.math.abs
 
 class SendTransactionViewModel(
     app: Application,
@@ -106,7 +94,13 @@ class SendTransactionViewModel(
         )
         viewModelScope.launch(Dispatchers.IO) {
             val tokens = getTokens()
-            val useBattery = BatteryHelper.isBatteryIsEnabledTx(wallet, batteryTransactionType, settingsRepository, accountRepository, batteryRepository)
+            val useBattery = BatteryHelper.isBatteryIsEnabledTx(
+                wallet,
+                batteryTransactionType,
+                settingsRepository,
+                accountRepository,
+                batteryRepository
+            )
             try {
                 val transfers = transfers(tokens.filter { it.isRequestMinting }, true, useBattery)
 
@@ -130,6 +124,7 @@ class SendTransactionViewModel(
                             emulationUseCase = emulationUseCase,
                             accountRepository = accountRepository,
                             batteryRepository = batteryRepository,
+                            forceRelayer = forceRelayer,
                             params = !request.ignoreInsufficientBalance
                         )
                     } else {
@@ -150,7 +145,6 @@ class SendTransactionViewModel(
                 emulationReadyDate.set(System.currentTimeMillis())
 
                 if (tonEmulated.failed && tonEmulated.error is InsufficientBalanceError && batteryDetails == null && !request.ignoreInsufficientBalance) {
-                    tonDetails = null
                     _stateFlow.value = SendTransactionState.InsufficientBalance(
                         wallet = wallet,
                         balance = Amount(tonEmulated.error.accountBalance),
@@ -161,8 +155,12 @@ class SendTransactionViewModel(
                     )
 
                     return@launch
+                }
+
+                tonDetails = if (!tonEmulated.failed) {
+                    createDetails(tonEmulated)
                 } else {
-                    tonDetails = createDetails(tonEmulated)
+                    null
                 }
 
                 val preferredFeeMethod = settingsRepository.getPreferredFeeMethod(wallet.id)
@@ -184,7 +182,6 @@ class SendTransactionViewModel(
                     _stateFlow.value = tonDetails!!
                     isBattery.set(false)
                 }
-
             } catch (e: Throwable) {
                 FirebaseCrashlytics.getInstance().recordException(
                     APIException.Emulation(
@@ -216,7 +213,8 @@ class SendTransactionViewModel(
     }
 
     private suspend fun createDetails(emulated: Emulated): SendTransactionState.Details {
-        val fee: SendFee = emulated.buildFee(wallet, api, accountRepository, batteryRepository, ratesRepository)
+        val fee: SendFee =
+            emulated.buildFee(wallet, api, accountRepository, batteryRepository, ratesRepository)
 
         val details = historyHelper.create(wallet, emulated, fee)
         val totalFormatBuilder = StringBuilder(getString(Localization.total, emulated.totalFormat))

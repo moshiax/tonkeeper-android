@@ -47,6 +47,7 @@ object BatteryHelper {
         emulationUseCase: EmulationUseCase,
         accountRepository: AccountRepository,
         batteryRepository: BatteryRepository,
+        forceRelayer: Boolean = false,
         params: Boolean
     ): Emulated? {
         val chargesBalance = getBatteryCharges(wallet, accountRepository, batteryRepository)
@@ -55,7 +56,7 @@ object BatteryHelper {
         val emulated = emulationUseCase(
             message = message,
             useBattery = true,
-            forceRelayer = chargesBalance > 0,
+            forceRelayer = forceRelayer,
             params = params
         )
 
@@ -63,7 +64,7 @@ object BatteryHelper {
             emulated.extra.value.value,
             batteryConfig.chargeCost
         )
-        return if (charges > chargesBalance) null else emulated
+        return if (charges > chargesBalance && !forceRelayer) null else emulated
     }
 
     suspend fun isBatteryIsEnabledTx(
