@@ -3,6 +3,9 @@ package com.tonapps.blockchain.ton.contract
 import com.tonapps.blockchain.ton.extensions.cellFromBase64
 import org.ton.api.pub.PublicKeyEd25519
 import org.ton.bitstring.BitString
+import org.ton.block.AddrStd
+import org.ton.block.Coins
+import org.ton.block.MsgAddress
 import org.ton.cell.Cell
 import org.ton.cell.CellBuilder
 import org.ton.contract.wallet.WalletTransfer
@@ -43,6 +46,15 @@ class LockupContractV1(
         TODO("Not yet implemented")
     }
 
+    override fun removePlugin(
+        seqNo: Int,
+        validUntil: Long,
+        queryId: BigInteger,
+        forwardAmount: Coins,
+        pluginAddress: AddrStd
+    ): Cell {
+        TODO("Not yet implemented")
+    }
 
     companion object {
         @JvmField

@@ -79,6 +79,16 @@ sealed class Item(type: Int, val name: String): BaseListItem(type) {
         name = "connected_apps"
     )
 
+    data class InstalledExtensions(
+        override val position: ListCell.Position
+    ): Icon(
+        titleRes = Localization.installed_extensions,
+        iconRes = UIKitIcon.ic_puzzle_28,
+        position = position,
+        secondaryIcon = false,
+        name = "installed_extensions"
+    )
+
     sealed class Icon(
         val titleRes: Int,
         val iconRes: Int,

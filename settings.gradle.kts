@@ -75,6 +75,8 @@ include(":apps:wallet:data:dapps")
 include(":apps:wallet:data:contacts")
 include(":apps:wallet:data:swap")
 
+include(":apps:wallet:data:plugins")
+
 
 include(":kmp:core")
 include(":kmp:ui")

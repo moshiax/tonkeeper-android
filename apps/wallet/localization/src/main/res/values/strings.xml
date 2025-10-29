@@ -727,4 +727,13 @@
     <string name="mnemonic_match_error">Recovery phrase doesn’t match this wallet</string>
     <string name="cell_schema">Cell Schema</string>
     <string name="cell_data">Cell Data</string>
+    <string name="installed_extensions">Installed Extensions</string>
+    <string name="disable">Disable</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">You have %1$s expired subscription from @donate</item>
+        <item quantity="few">You have %1$s expired subscriptions from @donate</item>
+        <item quantity="many">You have %1$s expired subscriptions from @donate</item>
+        <item quantity="other">You have %1$s expired subscriptions from @donate</item>
+    </plurals>
+    <string name="legacy_subscriptions_alert_message">Some of them may continue charging your wallet. Disable to avoid further payments.</string>
 </resources>

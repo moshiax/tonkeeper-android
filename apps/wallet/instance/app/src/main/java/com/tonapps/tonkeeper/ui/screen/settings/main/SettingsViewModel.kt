@@ -35,6 +35,7 @@ import com.tonapps.wallet.data.passcode.PasscodeManager
 import com.tonapps.wallet.data.rn.RNLegacy
 import com.tonapps.wallet.data.settings.SettingsRepository
 import com.tonapps.wallet.data.token.TokenRepository
+import com.tonapps.wallet.data.plugins.PluginsRepository
 import com.tonapps.wallet.localization.Language
 import com.tonapps.wallet.localization.Localization
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +63,7 @@ class SettingsViewModel(
     private val environment: Environment,
     private val tokenRepository: TokenRepository,
     private val batteryRepository: BatteryRepository,
+    private val pluginsRepository: PluginsRepository,
     private val analytics: AnalyticsHelper
 ) : BaseWalletVM(application) {
 
@@ -264,6 +266,9 @@ class SettingsViewModel(
         if (wallet.isTonConnectSupported) {
             uiItems.add(Item.SearchEngine(searchEngine, secondCellPosition))
             uiItems.add(Item.ConnectedApps(ListCell.Position.MIDDLE))
+            if (hasInstalledExtensions() && (wallet.hasPrivateKey || wallet.signer)) {
+                uiItems.add(Item.InstalledExtensions(ListCell.Position.MIDDLE))
+            }
         }
 
         uiItems.add(Item.Language(language.nameLocalized.ifEmpty {
@@ -312,5 +317,10 @@ class SettingsViewModel(
         accountRepository.requestTonProofToken(wallet)?.let {
             batteryRepository.getCharges(it, wallet.publicKey, wallet.testnet, true)
         } ?: 0
+    }
+
+    private suspend fun hasInstalledExtensions(): Boolean = withContext(Dispatchers.IO) {
+        val plugins = pluginsRepository.getPlugins(wallet.accountId, wallet.testnet)
+        plugins.isNotEmpty()
     }
 }

@@ -1,6 +1,5 @@
 package com.tonapps.tonkeeper.koin
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.koin.dsl.module
 import com.tonapps.tonkeeper.ui.screen.wallet.main.WalletViewModel
 import com.tonapps.tonkeeper.ui.screen.settings.main.SettingsViewModel
@@ -40,6 +39,8 @@ import com.tonapps.tonkeeper.ui.screen.staking.unstake.UnStakeViewModel
 import com.tonapps.tonkeeper.ui.screen.staking.stake.StakingViewModel
 import com.tonapps.tonkeeper.ui.screen.send.transaction.SendTransactionViewModel
 import com.tonapps.tonkeeper.ui.screen.settings.apps.AppsViewModel
+import com.tonapps.tonkeeper.ui.screen.settings.extensions.ExtensionsViewModel
+import com.tonapps.tonkeeper.ui.screen.send.boc.RemoveExtensionViewModel
 import com.tonapps.tonkeeper.ui.screen.sign.SignDataViewModel
 import com.tonapps.tonkeeper.ui.screen.staking.withdraw.StakeWithdrawViewModel
 import com.tonapps.tonkeeper.ui.screen.swap.omniston.OmnistonViewModel
@@ -71,10 +72,12 @@ val viewModelWalletModule = module {
     viewModelOf(::UnStakeViewModel)
     viewModelOf(::StakingViewModel)
     viewModelOf(::SendTransactionViewModel)
+    viewModelOf(::RemoveExtensionViewModel)
     viewModelOf(::StakeWithdrawViewModel)
     viewModelOf(::AddContactViewModel)
     viewModelOf(::EditContactViewModel)
     viewModelOf(::AppsViewModel)
+    viewModelOf(::ExtensionsViewModel)
     viewModelOf(::CollectiblesManageViewModel)
     viewModelOf(::CardViewModel)
     viewModelOf(::QRViewModel)

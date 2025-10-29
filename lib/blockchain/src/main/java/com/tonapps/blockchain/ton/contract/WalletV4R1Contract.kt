@@ -1,9 +1,12 @@
 package com.tonapps.blockchain.ton.contract
 
 import com.tonapps.blockchain.ton.extensions.cellFromBase64
+import com.tonapps.blockchain.ton.extensions.storeCoins
 import com.tonapps.blockchain.ton.extensions.storeSeqAndValidUntil
 import org.ton.api.pub.PublicKeyEd25519
 import org.ton.bigint.BigInt
+import org.ton.block.AddrStd
+import org.ton.block.Coins
 import org.ton.block.MessageRelaxed
 import org.ton.cell.Cell
 import org.ton.cell.CellBuilder
@@ -11,6 +14,7 @@ import org.ton.contract.wallet.WalletTransfer
 import org.ton.tlb.CellRef
 import org.ton.tlb.constructor.AnyTlbConstructor
 import org.ton.tlb.storeRef
+import java.math.BigInteger
 
 open class WalletV4R1Contract(
     workchain: Int = DEFAULT_WORKCHAIN,
@@ -60,6 +64,24 @@ open class WalletV4R1Contract(
                 val intMsg = CellRef(createIntMsg(gift))
                 storeRef(MessageRelaxed.tlbCodec(AnyTlbConstructor), intMsg)
             }
+        }
+    }
+
+    override fun removePlugin(
+        seqNo: Int,
+        validUntil: Long,
+        queryId: BigInteger,
+        forwardAmount: Coins,
+        pluginAddress: AddrStd
+    ): Cell {
+        return CellBuilder.createCell {
+            storeUInt(walletId, 32)
+            storeSeqAndValidUntil(seqNo, validUntil)
+            storeUInt(3, 8)
+            storeInt(pluginAddress.workchainId, 8)
+            storeBits(pluginAddress.address)
+            storeCoins(forwardAmount)
+            storeUInt(queryId, 64)
         }
     }
 

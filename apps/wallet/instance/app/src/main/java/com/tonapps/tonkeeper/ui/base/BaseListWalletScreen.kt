@@ -134,6 +134,10 @@ abstract class BaseListWalletScreen<C: ScreenContext>(
         headerView.doOnActionClick = onClick
     }
 
+    fun setActionTint(color: Int) {
+        headerView.setActionTint(color)
+    }
+
     fun setCloseIcon(@DrawableRes resId: Int, onClick: () -> Unit) {
         headerView.setIcon(resId)
         headerView.doOnCloseClick = onClick

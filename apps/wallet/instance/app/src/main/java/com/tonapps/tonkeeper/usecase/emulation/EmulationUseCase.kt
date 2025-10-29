@@ -67,6 +67,28 @@ class EmulationUseCase(
         }
     }
 
+    suspend operator fun invoke(
+        wallet: WalletEntity,
+        seqNo: Int,
+        unsignedBody: Cell,
+        outMsgs: List<Cell>,
+        forwardAmount: Coins,
+    ): Emulated {
+        return try {
+            emulate(wallet, seqNo, unsignedBody, outMsgs, forwardAmount)
+        } catch (e: Throwable) {
+            Emulated(
+                consequences = null,
+                total = Emulated.Total(Coins.ZERO, 0, false),
+                extra = Emulated.defaultExtra,
+                currency = settingsRepository.currency,
+                failed = true,
+                type = TransferType.Default,
+                error = e,
+            )
+        }
+    }
+
     private fun createMessage(
         message: MessageBodyEntity,
         internalMessage: Boolean
@@ -100,6 +122,36 @@ class EmulationUseCase(
         ) ?: throw IllegalStateException("Failed to emulate battery")
 
         return parseEmulated(wallet, consequences, TransferType.Battery)
+    }
+
+    private suspend fun emulate(
+        wallet: WalletEntity,
+        seqNo: Int,
+        unsignedBody: Cell,
+        outMsgs: List<Cell>,
+        forwardAmount: Coins,
+    ): Emulated {
+        val signedBoc = wallet.sign(
+            privateKey = PrivateKeyEd25519(AndroidSecureRandom),
+            seqNo = seqNo,
+            body = unsignedBody
+        )
+
+        val account = api.accounts(wallet.testnet).getAccount(wallet.accountId)
+        val accountBalance = Coins.of(account.balance)
+        val totalFee = contractExecution.computeRemoveExtensionFee(wallet, signedBoc, outMsgs)
+        val totalAmount =
+            totalFee + forwardAmount
+        if (totalAmount > accountBalance) {
+            throw InsufficientBalanceError(accountBalance, totalAmount)
+        }
+
+        val consequences = api.emulate(
+            cell = signedBoc,
+            testnet = wallet.testnet,
+            safeModeEnabled = settingsRepository.isSafeModeEnabled(api)
+        ) ?: throw IllegalArgumentException("Emulation failed")
+        return parseEmulated(wallet, consequences, TransferType.Default)
     }
 
     private suspend fun emulate(

@@ -56,6 +56,7 @@ class ProjectModules {
             const val dapps = ":apps:wallet:data:dapps"
             const val contacts = ":apps:wallet:data:contacts"
             const val swap = ":apps:wallet:data:swap"
+            const val plugins = ":apps:wallet:data:plugins"
         }
 
     }

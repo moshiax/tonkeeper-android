@@ -20,6 +20,7 @@ import org.ton.block.ExtInMsgInfo
 import org.ton.block.Maybe
 import org.ton.block.Message
 import org.ton.block.MessageRelaxed
+import org.ton.block.MsgAddress
 import org.ton.block.MsgAddressExt
 import org.ton.block.MsgAddressInt
 import org.ton.block.StateInit
@@ -43,32 +44,58 @@ abstract class BaseWalletContract(
         const val DEFAULT_WORKCHAIN = 0
         const val DEFAULT_WALLET_ID: Int = 698983191
 
-        fun create(publicKey: PublicKeyEd25519, v: String, networkGlobalId: Int): BaseWalletContract {
-            return when(v.lowercase()) {
+        fun create(
+            publicKey: PublicKeyEd25519,
+            v: String,
+            networkGlobalId: Int
+        ): BaseWalletContract {
+            return when (v.lowercase()) {
                 "v3r1" -> WalletV3R1Contract(publicKey = publicKey)
                 "v3r2" -> WalletV3R2Contract(publicKey = publicKey)
                 "v4r1" -> WalletV4R1Contract(publicKey = publicKey)
                 "v4r2" -> WalletV4R2Contract(publicKey = publicKey)
-                "v5beta" -> WalletV5BetaContract(publicKey = publicKey, networkGlobalId = networkGlobalId)
-                "v5r1" -> WalletV5R1Contract(publicKey = publicKey, networkGlobalId = networkGlobalId)
+                "v5beta" -> WalletV5BetaContract(
+                    publicKey = publicKey,
+                    networkGlobalId = networkGlobalId
+                )
+
+                "v5r1" -> WalletV5R1Contract(
+                    publicKey = publicKey,
+                    networkGlobalId = networkGlobalId
+                )
+
                 else -> throw IllegalArgumentException("Unsupported contract version: $v")
             }
         }
 
-        fun resolveVersion(publicKey: PublicKeyEd25519, accountId: String, testnet: Boolean): WalletVersion {
+        fun resolveVersion(
+            publicKey: PublicKeyEd25519,
+            accountId: String,
+            testnet: Boolean
+        ): WalletVersion {
             return resolveVersion(publicKey, accountId, if (testnet) -3 else -239)
         }
 
-        fun resolveVersion(publicKey: PublicKeyEd25519, accountId: String, networkGlobalId: Int): WalletVersion {
+        fun resolveVersion(
+            publicKey: PublicKeyEd25519,
+            accountId: String,
+            networkGlobalId: Int
+        ): WalletVersion {
             val v4r2 = WalletV4R2Contract(publicKey = publicKey).address.toAccountId()
             if (accountId.equalsAddress(v4r2)) {
                 return WalletVersion.V4R2
             }
-            val v5r1 = WalletV5R1Contract(publicKey = publicKey, networkGlobalId = networkGlobalId).address.toAccountId()
+            val v5r1 = WalletV5R1Contract(
+                publicKey = publicKey,
+                networkGlobalId = networkGlobalId
+            ).address.toAccountId()
             if (accountId.equalsAddress(v5r1)) {
                 return WalletVersion.V5R1
             }
-            val v5beta = WalletV5BetaContract(publicKey = publicKey, networkGlobalId = networkGlobalId).address.toAccountId()
+            val v5beta = WalletV5BetaContract(
+                publicKey = publicKey,
+                networkGlobalId = networkGlobalId
+            ).address.toAccountId()
             if (accountId.equalsAddress(v5beta)) {
                 return WalletVersion.V5BETA
             }
@@ -110,6 +137,7 @@ abstract class BaseWalletContract(
                         createdAt = 0u
                     )
                 }
+
                 is MsgAddressExt -> {
                     CommonMsgInfoRelaxed.ExtOutMsgInfoRelaxed(
                         src = AddrNone,
@@ -177,6 +205,14 @@ abstract class BaseWalletContract(
 
     abstract fun getWalletVersion(): WalletVersion
 
+    abstract fun removePlugin(
+        seqNo: Int,
+        validUntil: Long,
+        queryId: BigInteger,
+        forwardAmount: Coins,
+        pluginAddress: AddrStd
+    ): Cell
+
     abstract fun createTransferUnsignedBody(
         validUntil: Long,
         seqNo: Int,
@@ -241,7 +277,8 @@ abstract class BaseWalletContract(
             stateInit
         } else null
 
-        val maybeStateInit = Maybe.of(init?.let { Either.of<StateInit, CellRef<StateInit>>(null, CellRef(it)) })
+        val maybeStateInit =
+            Maybe.of(init?.let { Either.of<StateInit, CellRef<StateInit>>(null, CellRef(it)) })
 
         val transferBody = signBody(privateKey, unsignedBody)
 
@@ -268,7 +305,8 @@ abstract class BaseWalletContract(
             stateInit
         } else null
 
-        val maybeStateInit = Maybe.of(init?.let { Either.of<StateInit, CellRef<StateInit>>(null, CellRef(it)) })
+        val maybeStateInit =
+            Maybe.of(init?.let { Either.of<StateInit, CellRef<StateInit>>(null, CellRef(it)) })
 
         val body = Either.of<Cell, CellRef<Cell>>(null, CellRef(transferBody))
         return Message(

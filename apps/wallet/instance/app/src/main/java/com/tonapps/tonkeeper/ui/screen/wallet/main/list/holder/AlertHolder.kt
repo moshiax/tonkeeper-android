@@ -36,7 +36,7 @@ class AlertHolder(parent: ViewGroup): Holder<Item.Alert>(parent, R.layout.view_w
         actionView.visibility = View.VISIBLE
         actionView.text = item.buttonTitle
         if (item.buttonUrl != null) {
-            actionView.setOnClickListener {
+            itemView.setOnClickListener {
                 Navigation.from(context)?.openURL(item.buttonUrl)
             }
         }

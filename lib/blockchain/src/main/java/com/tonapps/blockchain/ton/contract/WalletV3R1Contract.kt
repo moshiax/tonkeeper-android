@@ -3,13 +3,17 @@ package com.tonapps.blockchain.ton.contract
 import com.tonapps.blockchain.ton.extensions.cellFromBase64
 import org.ton.api.pub.PublicKeyEd25519
 import org.ton.bigint.BigInt
+import org.ton.block.AddrStd
+import org.ton.block.Coins
 import org.ton.block.MessageRelaxed
+import org.ton.block.MsgAddress
 import org.ton.cell.Cell
 import org.ton.cell.CellBuilder
 import org.ton.contract.wallet.WalletTransfer
 import org.ton.tlb.CellRef
 import org.ton.tlb.constructor.AnyTlbConstructor
 import org.ton.tlb.storeRef
+import java.math.BigInteger
 
 open class WalletV3R1Contract(
     workchain: Int = DEFAULT_WORKCHAIN,
@@ -59,6 +63,17 @@ open class WalletV3R1Contract(
             storeRef(MessageRelaxed.tlbCodec(AnyTlbConstructor), intMsg)
         }
     }
+
+    override fun removePlugin(
+        seqNo: Int,
+        validUntil: Long,
+        queryId: BigInteger,
+        forwardAmount: Coins,
+        pluginAddress: AddrStd
+    ): Cell {
+        TODO("Not yet implemented")
+    }
+
 
     companion object {
         @JvmField

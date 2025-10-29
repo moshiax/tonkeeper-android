@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.ton.bitstring.BitString
 import org.ton.cell.Cell
+import java.math.BigDecimal
 import kotlin.math.ceil
 
 class EmulationContractExecution(private val api: API) {
@@ -95,7 +96,12 @@ class EmulationContractExecution(private val api: API) {
         return bits to cells
     }
 
-    suspend fun computeFee(wallet: WalletEntity, account: Account, inMsg: Cell, outMsgs: List<Cell>): Coins =
+    suspend fun computeFee(
+        wallet: WalletEntity,
+        account: Account,
+        inMsg: Cell,
+        outMsgs: List<Cell>
+    ): Coins =
         withContext(
             Dispatchers.IO
         ) {
@@ -132,7 +138,62 @@ class EmulationContractExecution(private val api: API) {
             val gasFee = computeGasFee(config, wallet.version, outMsgs.size)
             val importFee = computeImportFee(config, msgBits, msgCells)
 
-            Coins.of(storageFee + msgFwdFee + gasFee + importFee)
+            val base = BigDecimal(storageFee + msgFwdFee + gasFee + importFee)
+
+            Coins.of(((base * GAS_SAFETY_MULTIPLIER) / GAS_SAFETY_MULTIPLIER_DENOMINATOR).toLong())
         }
+
+    suspend fun computeRemoveExtensionFee(
+        wallet: WalletEntity,
+        inMsg: Cell,
+        outMsgs: List<Cell>
+    ): Coins =
+        withContext(
+            Dispatchers.IO
+        ) {
+            val config = getConfig(wallet.testnet)
+
+            var msgBits = 0
+            var msgCells = 0
+            val inMsgHashes = mutableSetOf<BitString>()
+            for (ref in inMsg.refs) {
+                val (bits, cells) = countBitsAndCellsInMsg(ref, inMsgHashes)
+                msgBits += bits
+                msgCells += cells
+            }
+
+            var msgFwdFee: Long = 0
+            for (outMsg in outMsgs) {
+                var fwdMsgBits = 0
+                var fwdMsgCells = 0
+                val fwdMsgHashes = mutableSetOf<BitString>()
+                for (ref in outMsg.refs) {
+                    val (bits, cells) = countBitsAndCellsInMsg(ref, fwdMsgHashes)
+                    fwdMsgBits += bits
+                    fwdMsgCells += cells
+                }
+                msgFwdFee += computeMsgFwdFee(config, fwdMsgBits, fwdMsgCells)
+            }
+
+            val gasUsed = when (wallet.version) {
+                WalletVersion.V4R2 -> 6615
+                WalletVersion.V5BETA -> 8444
+                WalletVersion.V5R1 -> 8444
+                else -> throw IllegalArgumentException("Unknown wallet version: $wallet.version")
+            }
+
+            val importFee = computeImportFee(config, msgBits, msgCells)
+            val gasFee = gasUsed * config.gasPrice
+
+            val base = BigDecimal(msgFwdFee + gasFee + importFee)
+
+            Coins.of(((base * GAS_SAFETY_MULTIPLIER) / GAS_SAFETY_MULTIPLIER_DENOMINATOR).toLong())
+        }
+
+
+    companion object {
+        private val GAS_SAFETY_MULTIPLIER = BigDecimal(105)
+        private val GAS_SAFETY_MULTIPLIER_DENOMINATOR = BigDecimal(100)
+    }
 
 }

@@ -24,6 +24,8 @@ import com.tonapps.wallet.data.core.isAvailableBiometric
 import com.tonapps.wallet.data.dapps.entities.AppPushEntity
 import com.tonapps.wallet.data.rates.entity.RatesEntity
 import com.tonapps.wallet.localization.Localization
+import com.tonapps.wallet.localization.Plurals
+import io.tonapi.models.WalletPlugin
 import uikit.extensions.badgeGreen
 import uikit.extensions.badgeRed
 import uikit.extensions.withGreenBadge
@@ -96,6 +98,7 @@ sealed class State {
         val isOnline: Boolean,
         val apkStatus: APKManager.Status,
         val tronUsdtEnabled: Boolean,
+        val plugins: List<WalletPlugin>
     ): State() {
 
         val totalBalanceFiat: Coins
@@ -304,6 +307,16 @@ sealed class State {
             val uiItems = mutableListOf<Item>()
             if (apkStatus != APKManager.Status.Default && apkStatus !is APKManager.Status.UpdateAvailable) {
                 uiItems.add(Item.ApkStatus(apkStatus))
+            }
+            val legacySubscriptions = plugins.filter { it.type == "subscription_v1" }
+            if (legacySubscriptions.isNotEmpty() && (wallet.hasPrivateKey || wallet.signer)) {
+                uiItems.add(Item.Alert(
+                    title = context.resources.getQuantityString(Plurals.legacy_subscriptions_alert_title, legacySubscriptions.size, legacySubscriptions.size),
+                    message = context.getString(Localization.legacy_subscriptions_alert_message),
+                    buttonTitle = context.getString(Localization.manage),
+                    buttonUrl = "tonkeeper://extensions"
+                ))
+                uiItems.add(Item.Space(true))
             }
             if (alerts.isNotEmpty()) {
                 for (alert in alerts) {
