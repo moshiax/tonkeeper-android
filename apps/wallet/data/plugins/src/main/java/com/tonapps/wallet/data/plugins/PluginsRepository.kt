@@ -40,11 +40,19 @@ class PluginsRepository(
                 return@withContext cached
             }
         }
-        val wallet = api.wallet(testnet).getWalletInfo(accountId)
-        val plugins = wallet.plugins
-        setCache(key, plugins)
-        _updatedFlow.emit(Unit)
-        plugins
+        try {
+            val wallet = api.wallet(testnet).getWalletInfo(accountId)
+            val plugins = wallet.plugins
+            setCache(key, plugins)
+            _updatedFlow.emit(Unit)
+            plugins
+        } catch (_: Throwable) {
+            val cached = getCache(key)
+            if (cached != null) {
+                return@withContext cached
+            }
+            emptyList()
+        }
     }
 
     private fun cacheKey(accountId: String, testnet: Boolean): String {

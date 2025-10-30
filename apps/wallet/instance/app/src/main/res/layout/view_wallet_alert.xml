@@ -25,14 +25,31 @@
             android:textAppearance="@style/TextAppearance.Body2"
             android:textColor="@color/constantBlack"/>
 
-        <androidx.appcompat.widget.AppCompatTextView
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:drawablePadding="4dp"
-            android:textAppearance="@style/TextAppearance.Label2"
-            android:textColor="@color/constantBlack"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/action_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage"
+                android:textAppearance="@style/TextAppearance.Label2"
+                android:textColor="@color/constantBlack"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/constantBlack"
+                android:layout_marginTop="1dp"
+                android:layout_marginLeft="2dp"
+                android:src="@drawable/ic_chevron_right_12"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </uikit.widget.ColumnLayout>
 

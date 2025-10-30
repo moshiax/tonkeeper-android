@@ -735,5 +735,10 @@
         <item quantity="many">You have %1$s expired subscriptions from @donate</item>
         <item quantity="other">You have %1$s expired subscriptions from @donate</item>
     </plurals>
-    <string name="legacy_subscriptions_alert_message">Some of them may continue charging your wallet. Disable to avoid further payments.</string>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one">It may continue charging your wallet. Disable to avoid further payments.</item>
+        <item quantity="few">Some of them may continue charging your wallet. Disable to avoid further payments.</item>
+        <item quantity="many">Some of them may continue charging your wallet. Disable to avoid further payments.</item>
+        <item quantity="other">Some of them may continue charging your wallet. Disable to avoid further payments.</item>
+    </plurals>
 </resources>

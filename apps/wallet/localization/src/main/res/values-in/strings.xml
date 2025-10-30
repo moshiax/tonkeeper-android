@@ -615,5 +615,14 @@
     <string name="mnemonic_match_error">Frasa pemulihan tidak cocok dengan dompet ini</string>
     <string name="cell_schema">Skema Sel</string>
     <string name="cell_data">Data Sel</string>
+    <string name="installed_extensions">Ekstensi Terpasang</string>
+    <string name="disable">Nonaktifkan</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="other">Anda memiliki %1$s langganan kedaluwarsa dari @donate</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="other">Beberapa mungkin terus menagih dompet Anda. Nonaktifkan untuk menghindari pembayaran selanjutnya.</item>
+    </plurals>
+
 
 </resources>

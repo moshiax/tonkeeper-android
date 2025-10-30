@@ -620,5 +620,15 @@
     <string name="mnemonic_match_error">Tiklash iborasi ushbu hamyonga mos kelmadi</string>
     <string name="cell_schema">Hujayra sxemasi</string>
     <string name="cell_data">Hujayra maʼlumotlari</string>
+    <string name="installed_extensions">O‘rnatilgan kengaytmalar</string>
+    <string name="disable">O‘chirish</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">Sizda @donate’dan %1$s muddati o‘tgan obuna bor</item>
+        <item quantity="other">Sizda @donate’dan %1$s muddati o‘tgan obunalar bor</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one">U hamon hamyoningizdan mablag‘ yechishi mumkin. Kelgusidagi to‘lovlardan qochish uchun o‘chiring.</item>
+        <item quantity="other">Ba\'zilari hamon hamyoningizdan mablag‘ yechishi mumkin. Kelgusidagi to‘lovlardan qochish uchun o‘chiring.</item>
+    </plurals>
 
 </resources>

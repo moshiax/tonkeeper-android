@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="transaction_expired">Термін дії транзакції минув</string>
     <string name="add_contact">Додати до адресної книги</string>
     <string name="add_to_home_screen">Додати на головний екран</string>
@@ -630,5 +630,19 @@
     <string name="mnemonic_match_error">Фраза відновлення не підходить до цього гаманця</string>
     <string name="cell_schema">Схема комірки</string>
     <string name="cell_data">Дані комірки</string>
+    <string name="installed_extensions">Встановлені розширення</string>
+    <string name="disable">Вимкнути</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">У вас є %1$s протермінована підписка від @donate</item>
+        <item quantity="few">У вас є %1$s протерміновані підписки від @donate</item>
+        <item quantity="many">У вас є %1$s протермінованих підписок від @donate</item>
+        <item quantity="other">У вас є %1$s протермінованих підписок від @donate</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Вона може продовжити списання коштів з вашого гаманця. Вимкніть, щоб уникнути подальших платежів.</item>
+        <item quantity="few">Деякі з них можуть продовжити списання коштів. Вимкніть, щоб уникнути подальших платежів.</item>
+        <item quantity="many">Деякі з них можуть продовжити списання коштів. Вимкніть, щоб уникнути подальших платежів.</item>
+        <item quantity="other">Деякі з них можуть продовжити списання коштів. Вимкніть, щоб уникнути подальших платежів.</item>
+    </plurals>
 
 </resources>

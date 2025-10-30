@@ -620,5 +620,15 @@
     <string name="mnemonic_match_error">La frase de recuperación no coincide con esta billetera</string>
     <string name="cell_schema">Esquema de celda</string>
     <string name="cell_data">Datos de celda</string>
+    <string name="installed_extensions">Extensiones instaladas</string>
+    <string name="disable">Desactivar</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">Tienes %1$s suscripción vencida de @donate</item>
+        <item quantity="other">Tienes %1$s suscripciones vencidas de @donate</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one">Podría seguir cobrando de tu billetera. Desactiva para evitar futuros pagos.</item>
+        <item quantity="other">Algunas podrían seguir cobrando de tu billetera. Desactiva para evitar futuros pagos.</item>
+    </plurals>
 
 </resources>

@@ -16,13 +16,8 @@ class AlertHolder(parent: ViewGroup): Holder<Item.Alert>(parent, R.layout.view_w
 
     private val titleView = findViewById<AppCompatTextView>(R.id.title)
     private val messageView = findViewById<AppCompatTextView>(R.id.message)
-    private val actionView = findViewById<AppCompatTextView>(R.id.action)
-
-    init {
-        val actionIcon = context.drawable(UIKitIcon.ic_chevron_right_12)
-        actionIcon.setTint(context.constantBlackColor)
-        actionView.setRightDrawable(actionIcon)
-    }
+    private val actionView = findViewById<View>(R.id.action)
+    private val actionTextView = findViewById<AppCompatTextView>(R.id.action_text)
 
     override fun onBind(item: Item.Alert) {
         titleView.text = item.title
@@ -34,7 +29,7 @@ class AlertHolder(parent: ViewGroup): Holder<Item.Alert>(parent, R.layout.view_w
         }
 
         actionView.visibility = View.VISIBLE
-        actionView.text = item.buttonTitle
+        actionTextView.text = item.buttonTitle
         if (item.buttonUrl != null) {
             itemView.setOnClickListener {
                 Navigation.from(context)?.openURL(item.buttonUrl)

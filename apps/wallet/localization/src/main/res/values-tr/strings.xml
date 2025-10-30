@@ -620,5 +620,15 @@
     <string name="mnemonic_match_error">Kurtarma ifadesi bu cüzdanla eşleşmiyor</string>
     <string name="cell_schema">Hücre Şeması</string>
     <string name="cell_data">Hücre Verileri</string>
+    <string name="installed_extensions">Yüklü Eklentiler</string>
+    <string name="disable">Devre dışı bırak</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">%1$s süresi dolmuş aboneliğiniz var (@donate)</item>
+        <item quantity="other">%1$s süresi dolmuş aboneliğiniz var (@donate)</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one">Cüzdanınızdan ücret almaya devam edebilir. Daha fazla ödeme olmaması için devre dışı bırakın.</item>
+        <item quantity="other">Bazıları cüzdanınızdan ücret almaya devam edebilir. Daha fazla ödeme olmaması için devre dışı bırakın.</item>
+    </plurals>
 
 </resources>

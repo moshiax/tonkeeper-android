@@ -312,7 +312,7 @@ sealed class State {
             if (legacySubscriptions.isNotEmpty() && (wallet.hasPrivateKey || wallet.signer)) {
                 uiItems.add(Item.Alert(
                     title = context.resources.getQuantityString(Plurals.legacy_subscriptions_alert_title, legacySubscriptions.size, legacySubscriptions.size),
-                    message = context.getString(Localization.legacy_subscriptions_alert_message),
+                    message = context.resources.getQuantityString(Plurals.legacy_subscriptions_alert_message, legacySubscriptions.size, legacySubscriptions.size),
                     buttonTitle = context.getString(Localization.manage),
                     buttonUrl = "tonkeeper://extensions"
                 ))

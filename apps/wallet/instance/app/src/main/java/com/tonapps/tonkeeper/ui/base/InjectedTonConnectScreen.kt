@@ -27,6 +27,7 @@ import com.tonapps.tonkeeper.ui.component.TonConnectWebView
 import com.tonapps.tonkeeper.ui.screen.root.RootViewModel
 import com.tonapps.tonkeeper.ui.screen.send.transaction.SendTransactionScreen
 import com.tonapps.tonkeeper.ui.screen.sign.SignDataScreen
+import com.tonapps.tonkeeper.ui.screen.watchonly.WatchInfoScreen
 import com.tonapps.wallet.api.API
 import com.tonapps.wallet.data.account.entities.WalletEntity
 import com.tonapps.wallet.data.core.entity.SignRequestEntity
@@ -154,6 +155,10 @@ abstract class InjectedTonConnectScreen(@LayoutRes layoutId: Int, wallet: Wallet
             if (messages.size == 1) {
                 val message = messages.first()
                 id = message.id
+                if (wallet.isWatchOnly) {
+                    navigation?.add(WatchInfoScreen.newInstance(wallet))
+                    return JsonBuilder.responseError(id, BridgeError.userDeclinedTransaction())
+                }
                 if (message.method == BridgeMethod.SIGN_DATA) {
                     return tonconnectSignData(message)
                 } else if (message.method != BridgeMethod.SEND_TRANSACTION) {

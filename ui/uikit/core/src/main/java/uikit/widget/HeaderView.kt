@@ -161,6 +161,7 @@ open class HeaderView @JvmOverloads constructor(
 
     fun setActionTint(color: Int) {
         actionView.setColorFilter(color)
+        actionView.setBackgroundDrawable(null)
     }
 
     fun setRightContent(view: View?) {

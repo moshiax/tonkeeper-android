@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Reviewed -->
     <string name="currency_usd_name">Доллар США</string>
     <string name="currency_eur_name">Евро</string>
@@ -688,4 +688,18 @@
     <string name="mnemonic_match_error">Секретный ключ не подходит к этому кошельку</string>
     <string name="cell_schema">Схема ячейки</string>
     <string name="cell_data">Данные ячейки</string>
+    <string name="installed_extensions">Установленные расширения</string>
+    <string name="disable">Отключить</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">У вас есть %1$s устаревшая подписка от @donate</item>
+        <item quantity="few">У вас есть %1$s устаревших подписок от @donate</item>
+        <item quantity="many">У вас есть %1$s устаревших подписок от @donate</item>
+        <item quantity="other">У вас есть %1$s устаревших подписок от @donate</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Она может продолжить списывать средства с вашего кошелька. Отключите, чтобы избежать дальнейших платежей.</item>
+        <item quantity="few">Подписки могут продолжать списывать средства с кошелька. Отключите, чтобы избежать дальнейших платежей.</item>
+        <item quantity="many">Подписки могут продолжать списывать средства с кошелька. Отключите, чтобы избежать дальнейших платежей.</item>
+        <item quantity="other">Подписки могут продолжать списывать средства с кошелька. Отключите, чтобы избежать дальнейших платежей.</item>
+    </plurals>
 </resources>
