@@ -971,6 +971,10 @@ class SendViewModel(
         transfer: TransferEntity,
     ): Coins {
         try {
+            if (transfer.token.isRequestMinting || transfer.token.customPayloadApiUri != null) {
+                return TransferEntity.POINT_ONE_TON
+            }
+
             val message = transfer.signForEstimation(
                 internalMessage = false, jettonTransferAmount = TransferEntity.ONE_TON
             )
@@ -1165,7 +1169,7 @@ class SendViewModel(
             val batteryCharges = getBatteryCharges()
             val batteryConfig = batteryRepository.getConfig(wallet.testnet)
             val txCharges = BatteryMapper.calculateChargesAmount(
-                fee.extra.toBigDecimal(),
+                Coins.of(abs(fee.extra)).value,
                 batteryConfig.chargeCost
             )
             if (txCharges > batteryCharges) {
@@ -1214,13 +1218,17 @@ class SendViewModel(
             is SendFee.Extra -> {
                 val extra = Coins.of(fee.extra)
                 when {
+                    transfer.token.isRequestMinting || transfer.token.customPayloadApiUri != null -> TransferEntity.POINT_ONE_TON
                     extra.isPositive -> TransferEntity.BASE_FORWARD_AMOUNT
                     extra.isZero -> TransferEntity.POINT_ONE_TON
-                    transfer.token.isRequestMinting || transfer.token.customPayloadApiUri != null -> TransferEntity.POINT_ONE_TON
                     else -> Coins.of(abs(fee.extra)) + TransferEntity.BASE_FORWARD_AMOUNT
                 }
             }
-
+            is SendFee.Ton -> when {
+                transfer.token.isRequestMinting || transfer.token.customPayloadApiUri != null -> TransferEntity.POINT_ONE_TON
+                fee.amount.isRefund -> TransferEntity.BASE_FORWARD_AMOUNT
+                else -> fee.amount.value + TransferEntity.BASE_FORWARD_AMOUNT
+            }
             else -> TransferEntity.POINT_ONE_TON
         }
 

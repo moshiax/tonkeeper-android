@@ -688,11 +688,11 @@
     <string name="mnemonic_match_error">Секретный ключ не подходит к этому кошельку</string>
     <string name="cell_schema">Схема ячейки</string>
     <string name="cell_data">Данные ячейки</string>
-    <string name="installed_extensions">Установленные расширения</string>
+    <string name="installed_extensions">Расширения</string>
     <string name="disable">Отключить</string>
     <plurals name="legacy_subscriptions_alert_title">
         <item quantity="one">У вас есть %1$s устаревшая подписка от @donate</item>
-        <item quantity="few">У вас есть %1$s устаревших подписок от @donate</item>
+        <item quantity="few">У вас есть %1$s устаревшие подписки от @donate</item>
         <item quantity="many">У вас есть %1$s устаревших подписок от @donate</item>
         <item quantity="other">У вас есть %1$s устаревших подписок от @donate</item>
     </plurals>
