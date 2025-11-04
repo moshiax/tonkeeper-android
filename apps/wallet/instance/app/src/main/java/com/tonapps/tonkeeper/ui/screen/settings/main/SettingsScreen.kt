@@ -22,6 +22,7 @@ import com.tonapps.tonkeeper.ui.screen.settings.language.LanguageScreen
 import com.tonapps.tonkeeper.ui.screen.name.edit.EditNameScreen
 import com.tonapps.tonkeeper.ui.screen.notifications.NotificationsManageScreen
 import com.tonapps.tonkeeper.ui.screen.settings.apps.AppsScreen
+import com.tonapps.tonkeeper.ui.screen.settings.extensions.ExtensionsScreen
 import com.tonapps.tonkeeper.ui.screen.settings.legal.LegalScreen
 import com.tonapps.tonkeeper.ui.screen.settings.main.list.Adapter
 import com.tonapps.tonkeeper.ui.screen.settings.main.list.Item
@@ -91,6 +92,7 @@ class SettingsScreen(
             is Item.Battery -> navigation?.add(BatteryScreen.newInstance(screenContext.wallet, from = "settings"))
             is Item.Logout -> if (item.delete) deleteAccount() else showSignOutDialog()
             is Item.ConnectedApps -> navigation?.add(AppsScreen.newInstance(screenContext.wallet))
+            is Item.InstalledExtensions -> navigation?.add(ExtensionsScreen.newInstance(screenContext.wallet))
             is Item.SearchEngine -> searchPicker(item)
             is Item.DeleteWatchAccount -> deleteAccount()
             is Item.Rate -> openRate()

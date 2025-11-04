@@ -27,8 +27,8 @@ sealed class SendFee {
         override val amount: Fee,
         override val fiatAmount: Coins,
         override val fiatCurrency: WalletCurrency,
-        override val extra: Long
-    ) : SendFee(), TokenFee, Extra
+        val error: Throwable? = null
+    ) : SendFee(), TokenFee
 
     data class Gasless(
         override val amount: Fee,

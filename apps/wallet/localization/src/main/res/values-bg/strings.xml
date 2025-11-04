@@ -666,5 +666,16 @@
     <string name="mnemonic_match_error">Фразата за възстановяване не съвпада с този портфейл</string>
     <string name="cell_schema">Схема на клетката</string>
     <string name="cell_data">Данни на клетката</string>
+    <string name="installed_extensions">Инсталирани разширения</string>
+    <string name="disable">Деактивирай</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="one">Имате %1$s изтекъл абонамент от @donate</item>
+        <item quantity="other">Имате %1$s изтекли абонамента от @donate</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="one">Той може да продължи да таксува вашия портфейл. Деактивирайте, за да избегнете бъдещи плащания.</item>
+        <item quantity="other">Някои от тях може да продължат да таксуват портфейла ви. Деактивирайте, за да избегнете бъдещи плащания.</item>
+    </plurals>
+
 
 </resources>

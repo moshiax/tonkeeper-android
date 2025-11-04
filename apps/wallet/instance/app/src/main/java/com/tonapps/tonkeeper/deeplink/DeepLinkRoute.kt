@@ -71,6 +71,7 @@ sealed class DeepLinkRoute {
     data object SettingsSecurity: Internal()
     data object SettingsCurrency: Internal()
     data object SettingsLanguage: Internal()
+    data object SettingsExtensions: Internal()
     data object SettingsNotifications: Internal()
     data object EditWalletLabel: Internal()
     data object Camera: DeepLinkRoute()
@@ -307,6 +308,7 @@ sealed class DeepLinkRoute {
                     "security" -> SettingsSecurity
                     "currency" -> SettingsCurrency
                     "language" -> SettingsLanguage
+                    "extensions" -> SettingsExtensions
                     "notifications", "push" -> SettingsNotifications
                     "edit", "customization" -> EditWalletLabel
                     "camera", "scan", "scanner" -> Camera

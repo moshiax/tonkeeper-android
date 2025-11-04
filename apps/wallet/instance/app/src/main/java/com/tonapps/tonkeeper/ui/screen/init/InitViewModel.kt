@@ -31,6 +31,7 @@ import com.tonapps.tonkeeper.extensions.fixW5Title
 import com.tonapps.tonkeeper.manager.push.PushManager
 import com.tonapps.tonkeeper.ui.base.BaseWalletVM
 import com.tonapps.tonkeeper.ui.screen.init.list.AccountItem
+import com.tonapps.tonkeeper.ui.screen.watchonly.WatchInfoScreen
 import com.tonapps.tonkeeper.worker.PushToggleWorker
 import com.tonapps.tonkeeper.worker.TotalBalancesWorker
 import com.tonapps.uikit.list.ListCell
@@ -629,8 +630,13 @@ class InitViewModel(
                     TotalBalancesWorker.run(context)
                 }
 
-                val selectedWalletId = wallets.minByOrNull { it.version }!!.id
-                accountRepository.setSelectedWallet(selectedWalletId)
+                val selectedWallet = wallets.minByOrNull { it.version }!!
+                accountRepository.setSelectedWallet(selectedWallet.id)
+
+                if (type == InitArgs.Type.Watch) {
+                    openScreen(WatchInfoScreen.newInstance(selectedWallet))
+                }
+
                 finish()
             } catch (e: Throwable) {
                 context.logError(e)

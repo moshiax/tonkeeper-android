@@ -75,6 +75,7 @@ import com.tonapps.tonkeeper.ui.screen.qr.QRScreen
 import com.tonapps.tonkeeper.ui.screen.send.main.SendScreen
 import com.tonapps.tonkeeper.ui.screen.send.transaction.SendTransactionScreen
 import com.tonapps.tonkeeper.ui.screen.settings.currency.CurrencyScreen
+import com.tonapps.tonkeeper.ui.screen.settings.extensions.ExtensionsScreen
 import com.tonapps.tonkeeper.ui.screen.settings.language.LanguageScreen
 import com.tonapps.tonkeeper.ui.screen.settings.main.SettingsScreen
 import com.tonapps.tonkeeper.ui.screen.settings.security.SecurityScreen
@@ -715,6 +716,8 @@ class RootViewModel(
             openScreen(CurrencyScreen.newInstance())
         } else if (route is DeepLinkRoute.SettingsLanguage) {
             openScreen(LanguageScreen.newInstance())
+        } else if (route is DeepLinkRoute.SettingsExtensions) {
+            openScreen(ExtensionsScreen.newInstance(wallet))
         } else if (route is DeepLinkRoute.SettingsNotifications) {
             openScreen(SettingsScreen.newInstance(wallet, "deeplink"))
         } else if (route is DeepLinkRoute.EditWalletLabel) {

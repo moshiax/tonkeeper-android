@@ -20,6 +20,7 @@ import com.tonapps.tonkeeper.extensions.toGrams
 import com.tonapps.wallet.api.entity.BalanceEntity
 import com.tonapps.wallet.api.entity.TokenEntity
 import com.tonapps.wallet.data.account.Wallet
+import com.tonapps.wallet.data.account.entities.MessageBodyEntity
 import com.tonapps.wallet.data.account.entities.WalletEntity
 import com.tonapps.wallet.data.events.CommentEncryption
 import org.ton.api.pk.PrivateKeyEd25519
@@ -144,18 +145,15 @@ data class TransferEntity(
         additionalGifts: List<WalletTransfer>,
         jettonAmount: Coins?,
         jettonTransferAmount: Coins
-    ): Array<WalletTransfer> {
+    ): List<WalletTransfer> {
         val gifts = mutableListOf<WalletTransfer>()
         gifts.add(
             getWalletTransfer(
-                privateKey,
-                excessesAddress,
-                jettonAmount,
-                jettonTransferAmount
+                privateKey, excessesAddress, jettonAmount, jettonTransferAmount
             )
         )
         gifts.addAll(additionalGifts)
-        return gifts.toTypedArray()
+        return gifts
     }
 
     fun getUnsignedBody(
@@ -175,7 +173,7 @@ data class TransferEntity(
                 additionalGifts = additionalGifts,
                 jettonAmount = jettonAmount,
                 jettonTransferAmount = jettonTransferAmount,
-            ),
+            ).toTypedArray(),
             internalMessage = internalMessage,
         )
     }
@@ -227,7 +225,9 @@ data class TransferEntity(
         return builder.build()
     }
 
-    private fun body(privateKey: PrivateKeyEd25519?, excessesAddress: AddrStd, jettonAmount: Coins?): Cell? {
+    private fun body(
+        privateKey: PrivateKeyEd25519?, excessesAddress: AddrStd, jettonAmount: Coins?
+    ): Cell? {
         if (isNft) {
             return nftBody(privateKey, excessesAddress)
         } else if (!isTon) {
@@ -237,9 +237,7 @@ data class TransferEntity(
     }
 
     private fun jettonBody(
-        privateKey: PrivateKeyEd25519?,
-        excessesAddress: AddrStd,
-        jettonAmount: Coins?
+        privateKey: PrivateKeyEd25519?, excessesAddress: AddrStd, jettonAmount: Coins?
     ): Cell {
         return TonTransferHelper.jetton(
             coins = jettonAmount?.toGrams() ?: coins,
@@ -257,6 +255,18 @@ data class TransferEntity(
             excessesAddress = excessesAddress,
             queryId = queryId,
             body = getCommentForwardPayload(privateKey),
+        )
+    }
+
+    fun getEmulationBody(jettonTransferAmount: Coins): MessageBodyEntity {
+        return MessageBodyEntity(
+            wallet = wallet, seqNo = seqno, validUntil = validUntil, transfers = getGifts(
+                privateKey = fakePrivateKey,
+                excessesAddress = contract.address,
+                jettonTransferAmount = jettonTransferAmount,
+                additionalGifts = emptyList(),
+                jettonAmount = null,
+            )
         )
     }
 
@@ -283,8 +293,7 @@ data class TransferEntity(
     }
 
     fun gaslessInternalGift(
-        jettonAmount: Coins,
-        batteryAddress: AddrStd
+        jettonAmount: Coins, batteryAddress: AddrStd
     ): WalletTransfer {
         if (isTon || isNft) {
             throw IllegalArgumentException("Gasless internal gift is not supported for TON and NFT transfers")

@@ -352,10 +352,6 @@ class TonConnectManager(
                 screen.contract.parseResult(bundle)
             }
 
-            if (wallet != null && !wallet.isTonConnectSupported) {
-                return@withContext JsonBuilder.connectEventError(BridgeError.methodNotSupported("Wallet not supported TonConnect"))
-            }
-
             val connect = newConnect(
                 wallet = response.wallet,
                 keyPair = keyPair,

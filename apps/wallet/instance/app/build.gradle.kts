@@ -57,6 +57,7 @@ dependencies {
     implementation(project(ProjectModules.Wallet.Data.dapps))
     implementation(project(ProjectModules.Wallet.Data.contacts))
     implementation(project(ProjectModules.Wallet.Data.swap))
+    implementation(project(ProjectModules.Wallet.Data.plugins))
 
     implementation(project(ProjectModules.UIKit.core))
     implementation(project(ProjectModules.UIKit.flag))

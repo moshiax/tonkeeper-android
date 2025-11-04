@@ -11,6 +11,8 @@ import org.ton.api.pub.PublicKeyEd25519
 import org.ton.bigint.BigInt
 import org.ton.bigint.toBigInt
 import org.ton.bitstring.BitString
+import org.ton.block.AddrStd
+import org.ton.block.Coins
 import org.ton.block.Message
 import org.ton.block.MessageRelaxed
 import org.ton.boc.BagOfCells
@@ -22,6 +24,7 @@ import org.ton.crypto.hex
 import org.ton.tlb.CellRef
 import org.ton.tlb.constructor.AnyTlbConstructor
 import org.ton.tlb.storeRef
+import java.math.BigInteger
 
 class WalletV5R1Contract(
     publicKey: PublicKeyEd25519,
@@ -156,6 +159,16 @@ class WalletV5R1Contract(
             storeRef(list)
             storeUInt(0, 1)
         }
+    }
+
+    override fun removePlugin(
+        seqNo: Int,
+        validUntil: Long,
+        queryId: BigInteger,
+        forwardAmount: Coins,
+        pluginAddress: AddrStd
+    ): Cell {
+        TODO("Not yet implemented")
     }
 
     companion object {

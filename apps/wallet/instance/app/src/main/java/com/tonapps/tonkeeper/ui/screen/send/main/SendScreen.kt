@@ -564,6 +564,9 @@ class SendScreen(wallet: WalletEntity) : WalletContextScreen(R.layout.fragment_s
             singleWallet = event.singleWallet,
             type = event.type
         )
+        if (args.type == Type.Direct) {
+            finish()
+        }
     }
 
     private fun onEvent(event: SendEvent) {

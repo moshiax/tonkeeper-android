@@ -615,5 +615,13 @@
     <string name="mnemonic_match_error">恢复短语与此钱包不匹配</string>
     <string name="cell_schema">单元架构</string>
     <string name="cell_data">单元数据</string>
+    <string name="installed_extensions">已安装的扩展</string>
+    <string name="disable">禁用</string>
+    <plurals name="legacy_subscriptions_alert_title">
+        <item quantity="other">您有 %1$s 个已过期的订阅来自 @donate</item>
+    </plurals>
+    <plurals name="legacy_subscriptions_alert_message">
+        <item quantity="other">它可能仍会从您的钱包扣费。请禁用以避免进一步付款。</item>
+    </plurals>
 
 </resources>

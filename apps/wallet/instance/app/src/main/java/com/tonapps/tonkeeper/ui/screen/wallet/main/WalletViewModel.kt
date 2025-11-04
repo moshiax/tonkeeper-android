@@ -27,6 +27,7 @@ import com.tonapps.wallet.data.collectibles.CollectiblesRepository
 import com.tonapps.wallet.data.collectibles.entities.DnsExpiringEntity
 import com.tonapps.wallet.data.core.ScreenCacheSource
 import com.tonapps.wallet.data.core.currency.WalletCurrency
+import com.tonapps.wallet.data.plugins.PluginsRepository
 import com.tonapps.wallet.data.rates.RatesRepository
 import com.tonapps.wallet.data.settings.SettingsRepository
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +64,7 @@ class WalletViewModel(
     private val remoteConfig: RemoteConfig,
     private val environment: Environment,
     private val collectiblesRepository: CollectiblesRepository,
+    private val pluginsRepository: PluginsRepository,
 ) : BaseWalletVM(app) {
 
     val installId: String
@@ -132,7 +134,8 @@ class WalletViewModel(
                 delay(2000)
                 setStatus(Status.Default)
                 _lastLtFlow.value = event.lt
-                _domainRenewFlow.value = collectiblesRepository.getDnsSoonExpiring(wallet.accountId, wallet.testnet)
+                _domainRenewFlow.value =
+                    collectiblesRepository.getDnsSoonExpiring(wallet.accountId, wallet.testnet)
             }
         }
 
@@ -176,6 +179,7 @@ class WalletViewModel(
             val localAssets = getAssets(walletCurrency, false)
             if (localAssets != null) {
                 val batteryBalance = getBatteryBalance(wallet)
+                val plugins = pluginsRepository.getPlugins(wallet.accountId, wallet.testnet)
                 val state = State.Main(
                     wallet = wallet,
                     assets = localAssets,
@@ -189,7 +193,8 @@ class WalletViewModel(
                     lt = currentLt,
                     isOnline = currentIsOnline,
                     apkStatus = apkStatus,
-                    tronUsdtEnabled = settingsRepository.getTronUsdtEnabled(wallet.id)
+                    tronUsdtEnabled = settingsRepository.getTronUsdtEnabled(wallet.id),
+                    plugins = plugins
                 )
                 assetsManager.setCachedTotalBalance(
                     wallet,
@@ -203,6 +208,7 @@ class WalletViewModel(
             if (isRequestUpdate) {
                 val remoteAssets = getAssets(walletCurrency, true)
                 val batteryBalance = getBatteryBalance(wallet, true)
+                val plugins = pluginsRepository.getPlugins(wallet.accountId, wallet.testnet, true)
                 if (remoteAssets != null) {
                     val state = State.Main(
                         wallet,
@@ -217,7 +223,8 @@ class WalletViewModel(
                         lt = currentLt,
                         isOnline = currentIsOnline,
                         apkStatus = apkStatus,
-                        tronUsdtEnabled = settingsRepository.getTronUsdtEnabled(wallet.id)
+                        tronUsdtEnabled = settingsRepository.getTronUsdtEnabled(wallet.id),
+                        plugins = plugins,
                     )
                     _stateMainFlow.value = state
                     assetsManager.setCachedTotalBalance(
@@ -310,7 +317,8 @@ class WalletViewModel(
     private fun requestDnsExpiring() {
         viewModelScope.launch {
             val period = if (DevSettings.dnsAll) 366 else 30
-            _domainRenewFlow.value = collectiblesRepository.getDnsSoonExpiring(wallet.accountId, wallet.testnet, period)
+            _domainRenewFlow.value =
+                collectiblesRepository.getDnsSoonExpiring(wallet.accountId, wallet.testnet, period)
         }
     }
 
