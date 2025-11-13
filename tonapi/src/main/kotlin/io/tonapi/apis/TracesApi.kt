@@ -20,7 +20,7 @@ import okhttp3.Call
 import okhttp3.HttpUrl
 
 import io.tonapi.models.GaslessEstimateRequestMessagesInner
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.Trace
 
 import kotlinx.serialization.SerialName

@@ -30,6 +30,7 @@ import io.tonapi.models.JettonBurnAction
 import io.tonapi.models.JettonMintAction
 import io.tonapi.models.JettonSwapAction
 import io.tonapi.models.JettonTransferAction
+import io.tonapi.models.LiquidityDepositAction
 import io.tonapi.models.NftItemTransferAction
 import io.tonapi.models.NftPurchaseAction
 import io.tonapi.models.PurchaseAction
@@ -145,14 +146,17 @@ data class Action (
     val depositTokenStake: DepositTokenStakeAction? = null,
 
     @SerialName(value = "WithdrawTokenStakeRequest")
-    val withdrawTokenStakeRequest: WithdrawTokenStakeRequestAction? = null
+    val withdrawTokenStakeRequest: WithdrawTokenStakeRequestAction? = null,
+
+    @SerialName(value = "LiquidityDeposit")
+    val liquidityDeposit: LiquidityDepositAction? = null
 
 ) {
 
     /**
      * 
      *
-     * Values: TonTransfer,ExtraCurrencyTransfer,ContractDeploy,JettonTransfer,JettonBurn,JettonMint,NftItemTransfer,Subscribe,UnSubscribe,AuctionBid,NftPurchase,DepositStake,WithdrawStake,WithdrawStakeRequest,ElectionsDepositStake,ElectionsRecoverStake,JettonSwap,SmartContractExec,DomainRenew,Purchase,DepositTokenStake,WithdrawTokenStakeRequest,Unknown.unknown
+     * Values: TonTransfer,ExtraCurrencyTransfer,ContractDeploy,JettonTransfer,JettonBurn,JettonMint,NftItemTransfer,Subscribe,UnSubscribe,AuctionBid,NftPurchase,DepositStake,WithdrawStake,WithdrawStakeRequest,ElectionsDepositStake,ElectionsRecoverStake,JettonSwap,SmartContractExec,DomainRenew,Purchase,AddExtension,RemoveExtension,SetSignatureAllowedAction,GasRelay,DepositTokenStake,WithdrawTokenStakeRequest,LiquidityDeposit,Unknown.unknown
      */
     @Serializable(with = TypeSerializer::class)
     enum class Type(val value: kotlin.String) {
@@ -176,8 +180,13 @@ data class Action (
         @SerialName(value = "SmartContractExec") SmartContractExec("SmartContractExec"),
         @SerialName(value = "DomainRenew") DomainRenew("DomainRenew"),
         @SerialName(value = "Purchase") Purchase("Purchase"),
+        @SerialName(value = "AddExtension") AddExtension("AddExtension"),
+        @SerialName(value = "RemoveExtension") RemoveExtension("RemoveExtension"),
+        @SerialName(value = "SetSignatureAllowedAction") SetSignatureAllowedAction("SetSignatureAllowedAction"),
+        @SerialName(value = "GasRelay") GasRelay("GasRelay"),
         @SerialName(value = "DepositTokenStake") DepositTokenStake("DepositTokenStake"),
         @SerialName(value = "WithdrawTokenStakeRequest") WithdrawTokenStakeRequest("WithdrawTokenStakeRequest"),
+        @SerialName(value = "LiquidityDeposit") LiquidityDeposit("LiquidityDeposit"),
         @SerialName(value = "Unknown") Unknown("Unknown"),
         @SerialName(value = "unknown") unknown("unknown");
     }

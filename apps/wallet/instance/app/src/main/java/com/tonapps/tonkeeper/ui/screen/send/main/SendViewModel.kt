@@ -275,7 +275,7 @@ class SendViewModel(
         val (balance, currencyCode) = if (amountCurrency) {
             Pair(token.fiat, currency.code)
         } else {
-            Pair(token.balance.value, token.symbol)
+            Pair(token.balance.uiBalance, token.symbol)
         }
 
         val remaining = balance - amount
@@ -288,7 +288,7 @@ class SendViewModel(
         }
 
         val remainingToken = if (!amountCurrency) {
-            token.balance.value - amount
+            token.balance.uiBalance - amount
         } else {
             rates.convertFromFiat(token.address, token.fiat - amount)
         }
@@ -707,9 +707,9 @@ class SendViewModel(
             builder.setAmount(Coins.ZERO)
             builder.setMax(false)
         } else if (!token.isTon) {
-            builder.setMax(amount.value == token.balance.value)
+            builder.setMax(amount.value == token.balance.uiBalance)
             builder.setBounceable(true)
-            builder.setAmount(amount.value)
+            builder.setAmount(token.balance.fromUIBalance(amount.value))
         } else {
             builder.setMax(amount.value == getTONBalance())
             builder.setAmount(amount.value)

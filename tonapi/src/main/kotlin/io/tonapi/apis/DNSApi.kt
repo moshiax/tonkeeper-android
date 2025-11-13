@@ -23,7 +23,7 @@ import io.tonapi.models.Auctions
 import io.tonapi.models.DnsRecord
 import io.tonapi.models.DomainBids
 import io.tonapi.models.DomainInfo
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

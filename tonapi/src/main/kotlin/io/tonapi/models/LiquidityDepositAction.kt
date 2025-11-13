@@ -16,9 +16,8 @@
 package io.tonapi.models
 
 import io.tonapi.models.AccountAddress
-import io.tonapi.models.JettonBalanceLock
-import io.tonapi.models.JettonPreview
-import io.tonapi.models.TokenRates
+import io.tonapi.models.Protocol
+import io.tonapi.models.VaultDepositInfo
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -32,28 +31,16 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 
-data class JettonBalance (
+data class LiquidityDepositAction (
 
-    @SerialName(value = "balance")
-    val balance: kotlin.String,
+    @SerialName(value = "protocol")
+    val protocol: Protocol,
 
-    @SerialName(value = "wallet_address")
-    val walletAddress: AccountAddress,
+    @SerialName(value = "from")
+    val from: AccountAddress,
 
-    @SerialName(value = "jetton")
-    val jetton: JettonPreview,
-
-    @SerialName(value = "scaled_ui_balance")
-    val scaledUiBalance: kotlin.String? = null,
-
-    @SerialName(value = "price")
-    val price: TokenRates? = null,
-
-    @SerialName(value = "extensions")
-    val extensions: kotlin.collections.List<kotlin.String>? = null,
-
-    @SerialName(value = "lock")
-    val lock: JettonBalanceLock? = null
+    @SerialName(value = "tokens")
+    val tokens: kotlin.collections.List<VaultDepositInfo>
 
 ) {
 

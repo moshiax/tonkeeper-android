@@ -18,6 +18,7 @@ data class BalanceEntity(
     val isRequestMinting: Boolean = false,
     val isTransferable: Boolean = true,
     val lastActivity: Long = -1,
+    val scaledValue: Coins? = null,
 ): Parcelable {
 
     companion object {
@@ -58,9 +59,21 @@ data class BalanceEntity(
     val blockchain: Blockchain
         get() = token.blockchain
 
+    val uiBalance: Coins
+        get() = scaledValue ?: value
+
+    fun fromUIBalance(amount: Coins): Coins {
+        if (scaledValue == null) {
+            return amount
+        }
+
+        return amount * value / scaledValue
+    }
+
     constructor(jettonBalance: JettonBalance) : this(
         token = TokenEntity(jettonBalance.jetton, jettonBalance.extensions, jettonBalance.lock),
         value = Coins.of(BigDecimal(jettonBalance.balance).movePointLeft(jettonBalance.jetton.decimals), jettonBalance.jetton.decimals),
+        scaledValue = Coins.of(BigDecimal(jettonBalance.scaledUiBalance).movePointLeft(jettonBalance.jetton.decimals), jettonBalance.jetton.decimals),
         walletAddress = jettonBalance.walletAddress.address,
         initializedAccount = true,
         isRequestMinting = jettonBalance.extensions?.contains(TokenEntity.Extension.CustomPayload.value) == true,
