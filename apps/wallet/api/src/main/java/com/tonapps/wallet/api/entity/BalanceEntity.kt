@@ -18,8 +18,9 @@ data class BalanceEntity(
     val isRequestMinting: Boolean = false,
     val isTransferable: Boolean = true,
     val lastActivity: Long = -1,
-    val scaledValue: Coins? = null,
-): Parcelable {
+    val numerator: BigDecimal? = null,
+    val denominator: BigDecimal? = null,
+) : Parcelable {
 
     companion object {
 
@@ -60,24 +61,40 @@ data class BalanceEntity(
         get() = token.blockchain
 
     val uiBalance: Coins
-        get() = scaledValue ?: value
+        get() {
+            if (numerator == null || denominator == null) {
+                return value
+            }
+
+            return Coins.of(
+                value.value * numerator / denominator,
+                decimals
+            )
+        }
 
     fun fromUIBalance(amount: Coins): Coins {
-        if (scaledValue == null) {
+        if (numerator == null || denominator == null) {
             return amount
         }
 
-        return amount * value / scaledValue
+        return Coins.of(
+            value.value * denominator / numerator,
+            decimals
+        )
     }
 
     constructor(jettonBalance: JettonBalance) : this(
         token = TokenEntity(jettonBalance.jetton, jettonBalance.extensions, jettonBalance.lock),
-        value = Coins.of(BigDecimal(jettonBalance.balance).movePointLeft(jettonBalance.jetton.decimals), jettonBalance.jetton.decimals),
-        scaledValue = Coins.of(BigDecimal(jettonBalance.scaledUiBalance).movePointLeft(jettonBalance.jetton.decimals), jettonBalance.jetton.decimals),
+        value = Coins.of(
+            BigDecimal(jettonBalance.balance).movePointLeft(jettonBalance.jetton.decimals),
+            jettonBalance.jetton.decimals
+        ),
         walletAddress = jettonBalance.walletAddress.address,
         initializedAccount = true,
         isRequestMinting = jettonBalance.extensions?.contains(TokenEntity.Extension.CustomPayload.value) == true,
-        isTransferable = jettonBalance.extensions?.contains(TokenEntity.Extension.NonTransferable.value) != true
+        isTransferable = jettonBalance.extensions?.contains(TokenEntity.Extension.NonTransferable.value) != true,
+        numerator = jettonBalance.jetton.scaledUi?.numerator?.toBigDecimal(),
+        denominator = jettonBalance.jetton.scaledUi?.denominator?.toBigDecimal()
     ) {
         rates = jettonBalance.price
     }

@@ -15,10 +15,6 @@
 
 package io.tonapi.models
 
-import io.tonapi.models.AccountAddress
-import io.tonapi.models.JettonBalanceLock
-import io.tonapi.models.JettonPreview
-import io.tonapi.models.TokenRates
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -32,25 +28,13 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 
-data class JettonBalance (
+data class ScaledUI (
 
-    @SerialName(value = "balance")
-    val balance: kotlin.String,
+    @SerialName(value = "numerator")
+    val numerator: kotlin.String,
 
-    @SerialName(value = "wallet_address")
-    val walletAddress: AccountAddress,
-
-    @SerialName(value = "jetton")
-    val jetton: JettonPreview,
-
-    @SerialName(value = "price")
-    val price: TokenRates? = null,
-
-    @SerialName(value = "extensions")
-    val extensions: kotlin.collections.List<kotlin.String>? = null,
-
-    @SerialName(value = "lock")
-    val lock: JettonBalanceLock? = null
+    @SerialName(value = "denominator")
+    val denominator: kotlin.String
 
 ) {
 

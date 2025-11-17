@@ -53,9 +53,6 @@ data class JettonTransferAction (
     @SerialName(value = "recipient")
     val recipient: AccountAddress? = null,
 
-    @SerialName(value = "scaled_ui_amount")
-    val scaledUiAmount: kotlin.String? = null,
-
     @SerialName(value = "comment")
     val comment: kotlin.String? = null,
 
