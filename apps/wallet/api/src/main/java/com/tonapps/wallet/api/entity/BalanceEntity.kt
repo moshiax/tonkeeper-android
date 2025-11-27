@@ -67,7 +67,7 @@ data class BalanceEntity(
             }
 
             return Coins.of(
-                value.value * numerator / denominator,
+                value.value.multiply(numerator).divide(denominator, 18, BigDecimal.ROUND_DOWN),
                 decimals
             )
         }
@@ -78,7 +78,7 @@ data class BalanceEntity(
         }
 
         return Coins.of(
-            value.value * denominator / numerator,
+            amount.value.multiply(denominator).divide(numerator, 18, BigDecimal.ROUND_DOWN),
             decimals
         )
     }
