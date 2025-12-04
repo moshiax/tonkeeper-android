@@ -15,6 +15,7 @@
 
 package io.tonapi.models
 
+import io.tonapi.models.Price
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -28,13 +29,13 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 
-data class GetOpenapiJsonDefaultResponse (
+data class VaultDepositInfo (
 
-    @SerialName(value = "error")
-    val error: kotlin.String,
+    @SerialName(value = "price")
+    val price: Price,
 
-    @SerialName(value = "error_code")
-    val errorCode: kotlin.Long? = null
+    @SerialName(value = "vault")
+    val vault: kotlin.String
 
 ) {
 

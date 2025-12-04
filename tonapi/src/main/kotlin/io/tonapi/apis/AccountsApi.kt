@@ -30,7 +30,7 @@ import io.tonapi.models.GaslessEstimateRequestMessagesInner
 import io.tonapi.models.GetAccountDiff200Response
 import io.tonapi.models.GetAccountPublicKey200Response
 import io.tonapi.models.GetAccountsRequest
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.JettonBalance
 import io.tonapi.models.JettonOperations
 import io.tonapi.models.JettonsBalances

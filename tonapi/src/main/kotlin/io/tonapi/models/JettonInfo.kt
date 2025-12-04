@@ -18,6 +18,7 @@ package io.tonapi.models
 import io.tonapi.models.AccountAddress
 import io.tonapi.models.JettonMetadata
 import io.tonapi.models.JettonVerificationType
+import io.tonapi.models.ScaledUI
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -52,7 +53,10 @@ data class JettonInfo (
     val holdersCount: kotlin.Int,
 
     @SerialName(value = "admin")
-    val admin: AccountAddress? = null
+    val admin: AccountAddress? = null,
+
+    @SerialName(value = "scaled_ui")
+    val scaledUi: ScaledUI? = null
 
 ) {
 

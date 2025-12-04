@@ -21,7 +21,7 @@ import okhttp3.HttpUrl
 
 import io.tonapi.models.Event
 import io.tonapi.models.GaslessEstimateRequestMessagesInner
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

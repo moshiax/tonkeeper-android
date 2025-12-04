@@ -702,11 +702,11 @@ class HistoryHelper(
             val amountIn = jettonSwap.amountCoinsIn
             val amountOut = jettonSwap.amountCoinsOut
 
-            val value = CurrencyFormatter.format(tokenOut.symbol, amountOut).withPlus
-            val value2 = CurrencyFormatter.format(tokenIn.symbol, amountIn).withMinus
+            val value = CurrencyFormatter.format(tokenOut.symbol, tokenIn.toUIAmount(amountOut)).withPlus
+            val value2 = CurrencyFormatter.format(tokenIn.symbol, tokenOut.toUIAmount(amountIn)).withMinus
 
-            val valueFullFormatted = CurrencyFormatter.formatFull(tokenOut.symbol, amountOut, tokenOut.decimals).withPlus
-            val valueFullFormatted2 = CurrencyFormatter.formatFull(tokenIn.symbol, amountIn, tokenIn.decimals).withMinus
+            val valueFullFormatted = CurrencyFormatter.formatFull(tokenOut.symbol, tokenOut.toUIAmount(amountOut), tokenOut.decimals).withPlus
+            val valueFullFormatted2 = CurrencyFormatter.formatFull(tokenIn.symbol, tokenOut.toUIAmount(amountIn), tokenIn.decimals).withMinus
 
             val rates = ratesRepository.getRates(currency, tokenIn.address)
             val inCurrency = rates.convert(tokenIn.address, amountIn)
@@ -739,7 +739,7 @@ class HistoryHelper(
             )
         } else if (action.jettonTransfer != null) {
             val jettonTransfer = action.jettonTransfer!!
-            val token = jettonTransfer.jetton.address
+            val token = TokenEntity(jettonTransfer.jetton)
 
             if (options.safeMode && jettonTransfer.jetton.verification != JettonVerificationType.whitelist) {
                 return null
@@ -753,8 +753,8 @@ class HistoryHelper(
             } ?: false
 
             val amount = Coins.ofNano(jettonTransfer.amount, jettonTransfer.jetton.decimals)
-            var value = CurrencyFormatter.format(symbol, amount)
-            var valueFullFormatted = CurrencyFormatter.formatFull(symbol, amount, jettonTransfer.jetton.decimals)
+            var value = CurrencyFormatter.format(symbol, token.toUIAmount(amount))
+            var valueFullFormatted = CurrencyFormatter.formatFull(symbol, token.toUIAmount(amount), jettonTransfer.jetton.decimals)
 
             val itemAction: ActionType
             val accountAddress: AccountAddress?
@@ -776,8 +776,8 @@ class HistoryHelper(
                 valueFullFormatted = valueFullFormatted.withPlus
             }
 
-            val rates = ratesRepository.getRates(currency, token)
-            val inCurrency = rates.convert(token, amount)
+            val rates = ratesRepository.getRates(currency, token.address)
+            val inCurrency = rates.convert(token.address, amount)
             val isEncryptedComment = jettonTransfer.encryptedComment != null
 
             val comment = HistoryItem.Event.Comment.create(
@@ -800,7 +800,7 @@ class HistoryHelper(
                 comment = comment,
                 value = value,
                 valueFullFormatted = valueFullFormatted,
-                tokenAddress = token,
+                tokenAddress = token.address,
                 tokenCode = "",
                 coinIconUrl = jettonTransfer.jetton.image,
                 timestamp = timestamp,

@@ -21,8 +21,8 @@ import okhttp3.HttpUrl
 
 import io.tonapi.models.AccountInfoByStateInit
 import io.tonapi.models.GetAccountInfoByStateInitRequest
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.GetTonConnectPayload200Response
-import io.tonapi.models.InlineObject
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

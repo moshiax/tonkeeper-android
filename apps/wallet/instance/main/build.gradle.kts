@@ -24,7 +24,7 @@ android {
         targetSdk = Build.compileSdkVersion
         versionCode = 600
 
-        versionName = "5.4.43" // Format is "major.minor.patch" (e.g. "1.0.0") and only numbers are allowed
+        versionName = "5.4.44" // Format is "major.minor.patch" (e.g. "1.0.0") and only numbers are allowed
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

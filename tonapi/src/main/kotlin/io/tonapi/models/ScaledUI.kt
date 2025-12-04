@@ -28,13 +28,13 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 
-data class GetOpenapiJsonDefaultResponse (
+data class ScaledUI (
 
-    @SerialName(value = "error")
-    val error: kotlin.String,
+    @SerialName(value = "numerator")
+    val numerator: kotlin.String,
 
-    @SerialName(value = "error_code")
-    val errorCode: kotlin.Long? = null
+    @SerialName(value = "denominator")
+    val denominator: kotlin.String
 
 ) {
 

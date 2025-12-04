@@ -15,6 +15,9 @@
 
 package io.tonapi.models
 
+import io.tonapi.models.AccountAddress
+import io.tonapi.models.Protocol
+import io.tonapi.models.VaultDepositInfo
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -28,13 +31,16 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 
-data class GetOpenapiJsonDefaultResponse (
+data class LiquidityDepositAction (
 
-    @SerialName(value = "error")
-    val error: kotlin.String,
+    @SerialName(value = "protocol")
+    val protocol: Protocol,
 
-    @SerialName(value = "error_code")
-    val errorCode: kotlin.Long? = null
+    @SerialName(value = "from")
+    val from: AccountAddress,
+
+    @SerialName(value = "tokens")
+    val tokens: kotlin.collections.List<VaultDepositInfo>
 
 ) {
 

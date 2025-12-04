@@ -21,7 +21,7 @@ import okhttp3.HttpUrl
 
 import io.tonapi.models.Event
 import io.tonapi.models.GetAccountsRequest
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.JettonHolders
 import io.tonapi.models.JettonInfo
 import io.tonapi.models.JettonTransferPayload

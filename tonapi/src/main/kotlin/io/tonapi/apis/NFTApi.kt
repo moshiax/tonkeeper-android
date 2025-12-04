@@ -21,7 +21,7 @@ import okhttp3.HttpUrl
 
 import io.tonapi.models.AccountEvents
 import io.tonapi.models.GetAccountsRequest
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.NftCollection
 import io.tonapi.models.NftCollections
 import io.tonapi.models.NftItem

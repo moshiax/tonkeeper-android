@@ -27,7 +27,7 @@ import io.tonapi.models.BlockchainConfig
 import io.tonapi.models.BlockchainLibrary
 import io.tonapi.models.BlockchainRawAccount
 import io.tonapi.models.ExecGetMethodWithBodyForBlockchainAccountRequest
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.MethodExecutionResult
 import io.tonapi.models.RawBlockchainConfig
 import io.tonapi.models.ReducedBlocks

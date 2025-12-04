@@ -20,6 +20,7 @@ import okhttp3.Call
 import okhttp3.HttpUrl
 
 import io.tonapi.models.GetAllRawShardsInfo200Response
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.GetOutMsgQueueSizes200Response
 import io.tonapi.models.GetRawAccountState200Response
 import io.tonapi.models.GetRawBlockProof200Response
@@ -34,7 +35,6 @@ import io.tonapi.models.GetRawShardBlockProof200Response
 import io.tonapi.models.GetRawShardInfo200Response
 import io.tonapi.models.GetRawTime200Response
 import io.tonapi.models.GetRawTransactions200Response
-import io.tonapi.models.InlineObject
 import io.tonapi.models.SendRawMessage200Response
 import io.tonapi.models.SendRawMessageRequest
 
