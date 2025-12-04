@@ -4,6 +4,7 @@ import android.util.Log
 import com.tonapps.blockchain.ton.extensions.equalsAddress
 import com.tonapps.icu.Coins
 import com.tonapps.wallet.api.API
+import com.tonapps.wallet.api.entity.TokenEntity
 import com.tonapps.wallet.api.entity.value.Blockchain
 import com.tonapps.wallet.api.entity.value.BlockchainAddress
 import com.tonapps.wallet.api.entity.value.Timestamp
@@ -530,7 +531,8 @@ internal class TxActionMapper(
     }
 
     private fun jettonTransfer(address: BlockchainAddress, action: JettonTransferAction): TxActionBody {
-        val amount = Coins.ofNano(action.amount, action.jetton.decimals)
+        val jetton = TokenEntity(action.jetton)
+        val amount = jetton.toUIAmount(Coins.ofNano(action.amount, jetton.decimals))
         val currency = currency(action.jetton)
         val sender = action.sender?.let { account(it, address.testnet) }
         val recipient = action.recipient?.let { account(it, address.testnet) }
@@ -558,15 +560,17 @@ internal class TxActionMapper(
         val incomingAmount = if (action.tonIn != null) {
             TxActionBody.Value(Coins.of(action.tonIn!!), WalletCurrency.TON)
         } else {
+            val jetton = TokenEntity(action.jettonMasterIn!!)
             val currency = currency(action.jettonMasterIn!!)
-            TxActionBody.Value(Coins.ofNano(action.amountIn, currency.decimals), currency)
+            TxActionBody.Value(jetton.toUIAmount(Coins.ofNano(action.amountIn, jetton.decimals)), currency)
         }
 
         val outgoingAmount = if (action.tonOut != null) {
             TxActionBody.Value(Coins.of(action.tonOut!!), WalletCurrency.TON)
         } else {
+            val jetton = TokenEntity(action.jettonMasterOut!!)
             val currency = currency(action.jettonMasterOut!!)
-            TxActionBody.Value(Coins.ofNano(action.amountOut, currency.decimals), currency)
+            TxActionBody.Value(jetton.toUIAmount(Coins.ofNano(action.amountOut, jetton.decimals)), currency)
         }
 
         val builder = TxActionBody.Builder(ActionType.Swap)

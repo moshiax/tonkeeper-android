@@ -20,7 +20,7 @@ import okhttp3.Call
 import okhttp3.HttpUrl
 
 import io.tonapi.models.AccountPurchases
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

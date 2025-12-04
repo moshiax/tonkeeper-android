@@ -43,7 +43,11 @@ data class Risk (
     val jettons: kotlin.collections.List<JettonQuantity>,
 
     @SerialName(value = "nfts")
-    val nfts: kotlin.collections.List<NftItem>
+    val nfts: kotlin.collections.List<NftItem>,
+
+    /* Estimated equivalent value of all assets at risk in selected currency (for example USD) */
+    @SerialName(value = "total_equivalent")
+    val totalEquivalent: kotlin.Float? = null
 
 ) {
 

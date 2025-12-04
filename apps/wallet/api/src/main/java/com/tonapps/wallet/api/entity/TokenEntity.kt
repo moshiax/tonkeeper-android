@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.tonapps.blockchain.ton.extensions.cellFromHex
 import com.tonapps.blockchain.ton.extensions.equalsAddress
 import com.tonapps.blockchain.ton.extensions.toRawAddress
+import com.tonapps.icu.Coins
 import com.tonapps.wallet.api.R
 import com.tonapps.wallet.api.entity.value.Blockchain
 import io.tonapi.models.JettonBalanceLock
@@ -18,6 +19,7 @@ import org.ton.block.StateInit
 import org.ton.cell.Cell
 import org.ton.tlb.CellRef
 import org.ton.tlb.asRef
+import java.math.BigDecimal
 
 @Parcelize
 data class TokenEntity(
@@ -31,7 +33,9 @@ data class TokenEntity(
     val isRequestMinting: Boolean,
     val isTransferable: Boolean,
     val lock: Lock? = null,
-    val customPayloadApiUri: String?
+    val customPayloadApiUri: String?,
+    val numerator: BigDecimal? = null,
+    val denominator: BigDecimal? = null,
 ): Parcelable {
 
     val isTsTON: Boolean
@@ -193,6 +197,17 @@ data class TokenEntity(
     val blacklist: Boolean
         get() = verification == TokenEntity.Verification.blacklist
 
+    fun toUIAmount(amount: Coins): Coins {
+        if (numerator == null || denominator == null) {
+            return amount
+        }
+
+        return Coins.of(
+            amount.value * numerator / denominator,
+            decimals
+        )
+    }
+
     constructor(
         jetton: JettonPreview,
         extensions: List<String>? = null,
@@ -208,7 +223,9 @@ data class TokenEntity(
         isRequestMinting = extensions?.contains(Extension.CustomPayload.value) == true,
         isTransferable = extensions?.contains(Extension.NonTransferable.value) != true,
         lock = lock?.let { Lock(it) },
-        customPayloadApiUri = jetton.customPayloadApiUri
+        customPayloadApiUri = jetton.customPayloadApiUri,
+        numerator = jetton.scaledUi?.numerator?.toBigDecimal(),
+        denominator = jetton.scaledUi?.denominator?.toBigDecimal()
     )
 
     constructor(

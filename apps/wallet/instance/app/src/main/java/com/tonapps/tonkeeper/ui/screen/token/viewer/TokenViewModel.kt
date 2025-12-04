@@ -198,7 +198,7 @@ class TokenViewModel(
         val currency = settingsRepository.currency.code
         val items = mutableListOf<Item>()
 
-        var headerBalance = token.balance.value
+        var headerBalance = token.balance.uiBalance
 
         val balanceItems = mutableListOf<Item.EthenaBalance>()
 

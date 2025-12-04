@@ -100,7 +100,7 @@ class TokenPickerViewModel(
                 position = ListCell.getPosition(sortedTokens.size, index),
                 raw = token,
                 selected = token.address == selectedToken.address,
-                balance = CurrencyFormatter.format(token.symbol, token.balance.value),
+                balance = CurrencyFormatter.format(token.symbol, token.balance.uiBalance),
                 hiddenBalance = settingsRepository.hiddenBalances,
                 showNetwork = tronUsdtEnabled && (token.isUsdt || token.isTrc20)
             )

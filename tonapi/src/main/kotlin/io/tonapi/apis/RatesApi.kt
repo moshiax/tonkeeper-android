@@ -21,8 +21,8 @@ import okhttp3.HttpUrl
 
 import io.tonapi.models.GetChartRates200Response
 import io.tonapi.models.GetMarketsRates200Response
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.GetRates200Response
-import io.tonapi.models.InlineObject
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

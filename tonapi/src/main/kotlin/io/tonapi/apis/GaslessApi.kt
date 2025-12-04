@@ -23,7 +23,7 @@ import io.tonapi.models.GaslessConfig
 import io.tonapi.models.GaslessEstimateRequest
 import io.tonapi.models.GaslessSendRequest
 import io.tonapi.models.GaslessTx
-import io.tonapi.models.InlineObject
+import io.tonapi.models.GetOpenapiJsonDefaultResponse
 import io.tonapi.models.SignRawParams
 
 import kotlinx.serialization.SerialName

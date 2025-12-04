@@ -16,6 +16,7 @@
 package io.tonapi.models
 
 import io.tonapi.models.JettonVerificationType
+import io.tonapi.models.ScaledUI
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -53,7 +54,10 @@ data class JettonPreview (
     val score: kotlin.Int,
 
     @SerialName(value = "custom_payload_api_uri")
-    val customPayloadApiUri: kotlin.String? = null
+    val customPayloadApiUri: kotlin.String? = null,
+
+    @SerialName(value = "scaled_ui")
+    val scaledUi: ScaledUI? = null
 
 ) {
 
