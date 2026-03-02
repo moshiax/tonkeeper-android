@@ -90,6 +90,12 @@ android {
     }
 }
 
+androidComponents {
+    beforeVariants(selector().withFlavor("version" to "site").withBuildType("debug")) {
+        it.enable = false
+    }
+}
+
 baselineProfile {
     saveInSrc = true
     dexLayoutOptimization = true

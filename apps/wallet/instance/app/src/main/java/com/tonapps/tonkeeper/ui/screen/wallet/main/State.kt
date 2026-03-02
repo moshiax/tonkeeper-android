@@ -321,13 +321,6 @@ sealed class State {
                 uiItems.add(Item.RenewDomains(wallet, renewDomains))
             }
 
-            setup?.let {
-                val setupTypes = createSetupTypes(it)
-                if (setupTypes.isNotEmpty()) {
-                    uiItems.addAll(uiItemsSetup(wallet.id, config, setupTypes))
-                }
-            }
-
             uiItems.addAll(uiItemsTokens(context, hiddenBalance))
             return uiItems.toList()
         }

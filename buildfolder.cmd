@@ -1,2 +1,2 @@
-cd apps\wallet\instance\main\build\outputs\apk\debug
+cd apps\wallet\instance\main\build\outputs\apk\default\debug
 explorer .

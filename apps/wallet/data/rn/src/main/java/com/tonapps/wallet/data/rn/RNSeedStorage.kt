@@ -78,6 +78,8 @@ internal class RNSeedStorage(context: Context) {
         return try {
             readState()
             true
+        } catch (e: RNException.EmptyChunks) {
+            false
         } catch (e: Exception) {
             CrashReporter.recordException(e)
             false

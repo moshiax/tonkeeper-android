@@ -117,6 +117,7 @@ class WalletHeaderView @JvmOverloads constructor(
         super.setBackground(drawable)
         inflate(context, R.layout.view_wallet_header, this)
         supportView = findViewById(R.id.support)
+        supportView.visibility = View.GONE
         settingsView = findViewById(R.id.settings)
         walletView = findViewById(R.id.wallet)
         walletView.setOnTouchListener { v, event -> swipeDetector.onTouchEvent(event) }

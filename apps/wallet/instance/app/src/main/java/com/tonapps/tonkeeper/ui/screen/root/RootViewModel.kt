@@ -258,23 +258,14 @@ class RootViewModel(
             sendFirstLaunchEvent()
         }
 
-        combine(
-            accountRepository.selectedWalletFlow.take(1),
-            api.configFlow.filter { !it.empty }
-        ) { _, config ->
-            if (config.stories.isNotEmpty()) {
-                showStories(config.stories)
-            }
-        }.launch()
     }
-    private suspend fun showStories(storiesIds: List<String>) = withContext(Dispatchers.IO) {
-        val firstStoryId = storiesIds.firstOrNull { !settingsRepository.isStoriesViewed(it) } ?: return@withContext
-        showStory(firstStoryId, "wallet")
-    }
-
     private suspend fun showStory(id: String, from: String) = withContext(Dispatchers.IO) {
-        val stories = api.getStories(id) ?: return@withContext
-        openScreen(RemoteStoriesScreen.newInstance(stories, from))
+        try {
+            val stories = api.getStories(id) ?: return@withContext
+            openScreen(RemoteStoriesScreen.newInstance(stories, from))
+        } catch (e: Throwable) {
+            CrashReporter.recordException(e)
+        }
     }
     fun connectTonConnectBridge() {
         tonConnectManager.connectBridge()
