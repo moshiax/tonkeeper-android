@@ -12,6 +12,10 @@ android {
     namespace = Build.namespacePrefix("wallet.api")
     compileSdk = Build.compileSdkVersion
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         minSdk = Build.minSdkVersion
         consumerProguardFiles("consumer-rules.pro")

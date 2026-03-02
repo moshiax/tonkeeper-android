@@ -110,5 +110,4 @@ dependencies {
     implementation(libs.androidX.profileinstaller)
     baselineProfile(project(":baselineprofile:main"))
 
-    debugImplementation(libs.leakcanary)
 }

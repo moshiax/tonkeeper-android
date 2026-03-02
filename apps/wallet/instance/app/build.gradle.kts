@@ -76,10 +76,8 @@ dependencies {
     implementation(libs.androidX.webkit)
     implementation(libs.androidX.browser)
 
-
     implementation(libs.material)
     implementation(libs.flexbox)
-
 
     implementation(project(ProjectModules.Module.tonApi))
     implementation(project(ProjectModules.Module.blur))
@@ -103,6 +101,12 @@ dependencies {
     implementation(libs.google.play.review)
     implementation(libs.google.play.billing)
     implementation(libs.google.play.installreferrer)
+    implementation(libs.google.play.base)
+
+    implementation(libs.barcode.scanning)
+    implementation(libs.androidX.concurrent)
+    implementation(libs.guava)
+    implementation(libs.kotlinX.coroutines.play.services)
 
     implementation(libs.okhttp)
     implementation(libs.okhttp.sse)
@@ -118,7 +122,6 @@ dependencies {
     implementation(libs.compose.paging)
     implementation(libs.compose.paging.runtime)
     debugImplementation(libs.compose.debugTooling)
-
 
     implementation(libs.compose.viewModel)
 }

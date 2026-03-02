@@ -421,13 +421,10 @@ class RootViewModel(
     }
 
     private fun applyAnalyticsKeys(wallet: WalletEntity) {
-        val crashlytics = Firebase.crashlytics
-        crashlytics.setUserId(wallet.accountId)
-        crashlytics.setCustomKeys {
-            key("testnet", wallet.testnet)
-            key("walletType", wallet.type.name)
-            key("installId", settingsRepository.installId)
-        }
+        Log.d("TonkeeperAnalytics", "accountId=${wallet.accountId}")
+        Log.d("TonkeeperAnalytics", "testnet=${wallet.testnet}")
+        Log.d("TonkeeperAnalytics", "walletType=${wallet.type.name}")
+        Log.d("TonkeeperAnalytics", "installId=${settingsRepository.installId}")
     }
 
     fun signOut() {

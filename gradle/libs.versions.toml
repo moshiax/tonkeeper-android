@@ -38,6 +38,7 @@ flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version = "17.3.0" }
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }
 junit = { module = "junit:junit", version = "4.13.2" }
+guava = { module = "com.google.guava:guava", version = "33.5.0-android" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.14" }
 
 # TON
@@ -51,6 +52,7 @@ ton-contract = { module = "org.ton:ton-kotlin-contract", version.ref = "ton" }
 # KotlinX
 kotlinX-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version = "1.10.2" }
 kotlinX-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version = "1.10.2" }
+kotlinX-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version = "1.10.2" }
 kotlinX-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.7.1" }
 kotlinX-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.8.0" }
 

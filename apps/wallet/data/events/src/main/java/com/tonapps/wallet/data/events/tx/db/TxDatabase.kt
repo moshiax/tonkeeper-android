@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.tonapps.wallet.api.entity.value.ValueConverters
 
-@Database(entities = [TxRecordEntity::class], version = 1)
+@Database(entities = [TxRecordEntity::class], version = 1, exportSchema = false)
 @TypeConverters(TxConverters::class, ValueConverters::class)
 internal abstract class TxDatabase: RoomDatabase() {
 
