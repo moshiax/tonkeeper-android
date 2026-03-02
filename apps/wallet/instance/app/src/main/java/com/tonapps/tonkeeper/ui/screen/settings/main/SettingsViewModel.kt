@@ -1,8 +1,6 @@
 package com.tonapps.tonkeeper.ui.screen.settings.main
 
 import android.app.Application
-import android.os.Build
-import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.tonapps.blockchain.ton.contract.BaseWalletContract
 import com.tonapps.blockchain.ton.contract.WalletVersion
@@ -285,14 +283,6 @@ class SettingsViewModel(
         uiItems.add(Item.Theme(ListCell.Position.LAST))
 
         uiItems.add(Item.Space)
-        uiItems.add(Item.FAQ(ListCell.Position.FIRST, api.config.faqUrl))
-        uiItems.add(Item.Support(ListCell.Position.MIDDLE, getSupportUrl()))
-        uiItems.add(Item.News(ListCell.Position.MIDDLE, api.config.tonkeeperNewsUrl))
-        uiItems.add(Item.Contact(ListCell.Position.MIDDLE, api.config.supportLink))
-        if (environment.isGooglePlayServicesAvailable) {
-            uiItems.add(Item.Rate(ListCell.Position.MIDDLE))
-        }
-        uiItems.add(Item.Legal(ListCell.Position.LAST))
 
         uiItems.add(Item.Space)
         if (wallet.type == Wallet.Type.Watch) {
@@ -304,13 +294,6 @@ class SettingsViewModel(
         uiItems.add(Item.Logo(environment.installerSource))
 
         _uiItemsFlow.value = uiItems
-    }
-
-    private fun getSupportUrl(): String {
-        val startParams = "android${Build.VERSION.SDK_INT}app${context.appVersionCode}"
-        val builder = api.config.directSupportUrl.toUri().buildUpon()
-        builder.appendQueryParameter("start", startParams)
-        return builder.toString()
     }
 
     private suspend fun getBatteryCharges(): Int = withContext(Dispatchers.IO) {

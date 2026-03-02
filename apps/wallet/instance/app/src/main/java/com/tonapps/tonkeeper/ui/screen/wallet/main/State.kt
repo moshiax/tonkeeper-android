@@ -35,7 +35,6 @@ sealed class State {
     private enum class SetupType {
         Push,
         Biometry,
-        Telegram,
         Backup,
         SafeMode,
         OnboardingStories,
@@ -216,15 +215,6 @@ sealed class State {
                         walletId = wallet.id,
                         settingsType = Item.SetupLink.TYPE_NONE
                     )
-                    SetupType.Telegram -> Item.SetupLink(
-                        position = position,
-                        iconRes = UIKitIcon.ic_telegram_28,
-                        textRes = Localization.setup_finish_telegram,
-                        link = config.tonkeeperNewsUrl,
-                        blue = true,
-                        walletId = wallet.id,
-                        settingsType = Item.SetupLink.TYPE_TELEGRAM_CHANNEL
-                    )
                     SetupType.OnboardingStories -> Item.SetupLink(
                         position = position,
                         iconRes = UIKitIcon.ic_stories_44,
@@ -277,9 +267,6 @@ sealed class State {
             }
             if (!setup.biometryEnabled && isAvailableBiometric(App.instance)) {
                 setupTypes.add(SetupType.Biometry)
-            }
-            if (setup.showTelegramChannel) {
-                setupTypes.add(SetupType.Telegram)
             }
             if (setup.safeModeBlock) {
                 setupTypes.add(SetupType.SafeMode)
