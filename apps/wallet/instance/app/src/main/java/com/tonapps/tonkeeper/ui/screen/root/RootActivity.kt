@@ -181,11 +181,17 @@ class RootActivity : BaseWalletActivity() {
         viewModel.disconnectTonConnectBridge()
     }
 
+    override fun onStop() {
+        passcodeManager.lockscreenReset()
+        super.onStop()
+    }
+
     private suspend fun pinState(state: LockScreen.State) {
         if (state == LockScreen.State.None) {
             lockView.visibility = View.GONE
             lockPasscodeView.setSuccess()
         } else if (state == LockScreen.State.Error) {
+            lockView.visibility = View.VISIBLE
             lockPasscodeView.setError()
         } else {
             lockView.visibility = View.VISIBLE

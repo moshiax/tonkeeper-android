@@ -6,6 +6,7 @@ import android.view.View
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.tonapps.wallet.data.passcode.PasscodeHelper
+import com.tonapps.wallet.data.passcode.PasscodeManager
 import com.tonapps.wallet.data.passcode.R
 import com.tonapps.wallet.data.passcode.ui.PasscodeView
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ class PasscodeDialog(
 
     private var resultAlreadySent = false
     private val helper: PasscodeHelper by inject()
+    private val passcodeManager: PasscodeManager by inject()
     private val headerView: HeaderView
     private val passcodeView: PasscodeView
 
@@ -77,13 +79,21 @@ class PasscodeDialog(
 
     private fun check(code: String) {
         lifecycleScope.launch(Dispatchers.Main) {
+            if (passcodeManager.isTransactionPasscodeLocked()) {
+                passcodeView.setError()
+                passcodeView.isEnabled = true
+                return@launch
+            }
+
             val isValid = isValid(code)
             if (isValid) {
+                passcodeManager.onTransactionPasscodeSuccess()
                 setResult(code)
                 passcodeView.setSuccess()
                 delay(1000)
                 dismissAndDestroy()
             } else {
+                passcodeManager.onTransactionPasscodeFailedAttempt()
                 passcodeView.setError()
                 passcodeView.isEnabled = true
             }

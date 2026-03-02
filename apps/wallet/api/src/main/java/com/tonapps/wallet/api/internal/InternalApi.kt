@@ -185,14 +185,24 @@ internal class InternalApi(
 
     fun downloadConfig(testnet: Boolean, fallback: Boolean = false): ConfigEntity? {
         return try {
-            val json = request(
-                "keys",
-                testnet,
-                locale = context.locale,
+            val url = endpoint(
+                path = "keys",
+                testnet = testnet,
+                platform = "android",
+                build = appVersionName,
                 boot = true,
-                bootFallback = fallback
+                bootFallback = fallback,
             )
-            ConfigEntity(json, context.isDebug)
+            val headers = ArrayMap<String, String>()
+            headers["Accept-Language"] = context.locale.toString()
+            val body = withRetry {
+                okHttpClient.get(url, headers)
+            }
+            if (body.isNullOrBlank()) {
+                if (!fallback) downloadConfig(testnet, true) else null
+            } else {
+                ConfigEntity(JSONObject(body), context.isDebug)
+            }
         } catch (e: Throwable) {
             if (!fallback) {
                 downloadConfig(testnet, true)

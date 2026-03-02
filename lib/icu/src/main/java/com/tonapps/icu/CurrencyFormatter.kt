@@ -111,7 +111,7 @@ object CurrencyFormatter {
         value: BigDecimal,
         roundingMode: RoundingMode = RoundingMode.HALF_EVEN,
         replaceSymbol: Boolean = true,
-        stripTrailingZeros: Boolean = false,
+        stripTrailingZeros: Boolean = true,
     ): CharSequence {
         return format(currency, value, roundingMode, replaceSymbol, stripTrailingZeros, false)
     }

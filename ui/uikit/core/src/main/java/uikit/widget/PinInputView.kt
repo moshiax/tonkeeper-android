@@ -123,10 +123,6 @@ class PinInputView @JvmOverloads constructor(
     }
 
     fun setError() {
-        if (state == PinCodeState.ERROR) {
-            return
-        }
-
         hapticReject()
 
         state = PinCodeState.ERROR

@@ -1,8 +1,7 @@
 package com.tonapps.wallet.data.passcode
 
 import android.content.Context
-import android.util.Log
-import androidx.biometric.BiometricPrompt
+import androidx.core.content.edit
 import com.tonapps.extensions.CrashReporter
 import com.tonapps.extensions.logError
 import com.tonapps.wallet.data.account.AccountRepository
@@ -12,7 +11,6 @@ import com.tonapps.wallet.data.settings.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -28,6 +26,13 @@ class PasscodeManager(
     private val scope: CoroutineScope
 ) {
 
+    private companion object {
+        const val TX_PASSCODE_FAILED_ATTEMPTS_KEY = "tx_passcode_failed_attempts"
+        const val TX_PASSCODE_LOCKED_UNTIL_MS_KEY = "tx_passcode_locked_until_ms"
+        const val TX_PASSCODE_MAX_ATTEMPTS = 10
+        const val TX_PASSCODE_LOCK_DURATION_MS = 60 * 60 * 1000L
+    }
+
     private val lockscreen = LockScreen(this, settingsRepository)
 
     val lockscreenFlow: Flow<LockScreen.State>
@@ -41,6 +46,11 @@ class PasscodeManager(
 
     fun lockscreenBiometric() {
         lockscreen.biometric()
+    }
+
+
+    fun lockscreenReset() {
+        lockscreen.reset()
     }
 
     fun deleteAll() {
@@ -244,6 +254,49 @@ class PasscodeManager(
             navigation?.migrationLoader(false)
             false
         }
+    }
+
+
+    fun isTransactionPasscodeLocked(): Boolean {
+        val lockedUntil = settingsRepository.prefs.getLong(TX_PASSCODE_LOCKED_UNTIL_MS_KEY, 0L)
+        if (lockedUntil <= 0L) {
+            return false
+        }
+
+        val now = System.currentTimeMillis()
+        if (now >= lockedUntil) {
+            clearTransactionPasscodeLock()
+            return false
+        }
+
+        return true
+    }
+
+    fun onTransactionPasscodeFailedAttempt() {
+        if (isTransactionPasscodeLocked()) {
+            return
+        }
+
+        val attempts = settingsRepository.prefs.getInt(TX_PASSCODE_FAILED_ATTEMPTS_KEY, 0) + 1
+        if (attempts >= TX_PASSCODE_MAX_ATTEMPTS) {
+            settingsRepository.prefs.edit()
+                .putInt(TX_PASSCODE_FAILED_ATTEMPTS_KEY, 0)
+                .putLong(TX_PASSCODE_LOCKED_UNTIL_MS_KEY, System.currentTimeMillis() + TX_PASSCODE_LOCK_DURATION_MS)
+                .apply()
+        } else {
+            settingsRepository.prefs.edit().putInt(TX_PASSCODE_FAILED_ATTEMPTS_KEY, attempts).apply()
+        }
+    }
+
+    fun onTransactionPasscodeSuccess() {
+        clearTransactionPasscodeLock()
+    }
+
+    private fun clearTransactionPasscodeLock() {
+        settingsRepository.prefs.edit()
+            .putInt(TX_PASSCODE_FAILED_ATTEMPTS_KEY, 0)
+            .putLong(TX_PASSCODE_LOCKED_UNTIL_MS_KEY, 0L)
+            .apply()
     }
 
     fun confirmationFlow(context: Context, title: String) = flow {

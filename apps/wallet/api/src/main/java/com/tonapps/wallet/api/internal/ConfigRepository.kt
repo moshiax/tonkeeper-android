@@ -1,6 +1,7 @@
 package com.tonapps.wallet.api.internal
 
 import android.content.Context
+import com.tonapps.extensions.CrashReporter
 import com.tonapps.extensions.file
 import com.tonapps.extensions.toByteArray
 import com.tonapps.extensions.toParcel
@@ -53,9 +54,14 @@ internal class ConfigRepository(
     }
 
     private suspend fun remote(testnet: Boolean): ConfigEntity? = withContext(Dispatchers.IO) {
-        val config = internalApi.downloadConfig(testnet) ?: return@withContext null
-        configFile.writeBytes(config.toByteArray())
-        config
+        try {
+            val config = internalApi.downloadConfig(testnet) ?: return@withContext null
+            configFile.writeBytes(config.toByteArray())
+            config
+        } catch (e: Throwable) {
+            CrashReporter.recordException(e)
+            null
+        }
     }
 
     suspend fun refresh(testnet: Boolean) {

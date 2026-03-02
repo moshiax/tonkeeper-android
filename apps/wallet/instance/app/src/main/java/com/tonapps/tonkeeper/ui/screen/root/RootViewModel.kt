@@ -153,13 +153,12 @@ class RootViewModel(
 
     val lockscreenFlow = combine(
         passcodeManager.lockscreenFlow,
-        accountRepository.selectedStateFlow.filter { it !is AccountRepository.SelectedState.Initialization }.take(1)
+        accountRepository.selectedStateFlow.filter { it !is AccountRepository.SelectedState.Initialization }
     ) { lockscreen, state ->
-        if ((lockscreen is LockScreen.State.Input || lockscreen is LockScreen.State.Biometric) && state !is AccountRepository.SelectedState.Wallet) {
-            passcodeManager.reset()
-            LockScreen.State.None
-        } else {
+        if (state is AccountRepository.SelectedState.Wallet) {
             lockscreen
+        } else {
+            LockScreen.State.None
         }
     }
 
