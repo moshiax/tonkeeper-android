@@ -1,7 +1,7 @@
 package com.tonapps.wallet.api.cronet;
 
-import static com.google.firebase.components.Preconditions.checkArgument;
-import static com.google.firebase.components.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

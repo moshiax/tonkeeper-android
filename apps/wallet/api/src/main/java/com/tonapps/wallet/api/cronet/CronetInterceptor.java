@@ -1,6 +1,6 @@
 package com.tonapps.wallet.api.cronet;
 
-import static com.google.firebase.components.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import android.util.Log;

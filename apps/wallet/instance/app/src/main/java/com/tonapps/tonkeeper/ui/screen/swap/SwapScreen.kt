@@ -29,8 +29,6 @@ import uikit.extensions.getDimensionPixelSize
 import uikit.widget.webview.WebViewFixed
 import uikit.widget.webview.bridge.BridgeWebView
 import androidx.core.view.isGone
-import com.google.firebase.Firebase
-import com.google.firebase.perf.performance
 import com.tonapps.blockchain.ton.extensions.equalsAddress
 import com.tonapps.wallet.data.core.currency.WalletCurrency
 import org.ton.contract.wallet.WalletMessage

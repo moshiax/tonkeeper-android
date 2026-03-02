@@ -21,9 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "TON Apps"
 
-include(":apps:signer")
-
-
 include(":baselineprofile:main")
 
 

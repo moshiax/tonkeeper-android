@@ -3,12 +3,9 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
     id("kotlin-parcelize")
     id("kotlinx-serialization")
     id("androidx.baselineprofile")
-    id("com.google.firebase.firebase-perf")
 }
 
 val isCI = project.hasProperty("android.injected.signing.store.file")
@@ -19,7 +16,7 @@ android {
     compileSdk = Build.compileSdkVersion
 
     defaultConfig {
-        applicationId = "com.ton_keeper"
+        applicationId = "ton.notkeeper"
         minSdk = Build.minSdkVersion
         targetSdk = Build.compileSdkVersion
         versionCode = 600
@@ -37,11 +34,6 @@ android {
         }
         create("site") {
             dimension = "version"
-            matchingFallbacks += listOf("default")
-        }
-        create("uk") {
-            dimension = "version"
-            applicationIdSuffix = ".uk"
             matchingFallbacks += listOf("default")
         }
     }
