@@ -55,10 +55,7 @@ internal class RNSeedStorage(context: Context) {
         val passcode = kv.getItemImpl(biometryKey, SecureStoreOptions(
             keychainService = keychainService
         ))
-        if (passcode.isNullOrBlank()) {
-            throw Exception("Biometry passcode is null")
-        }
-        passcode
+        passcode.orEmpty()
     }
 
     suspend fun setupBiometry(passcode: String) = withContext(Dispatchers.IO) {

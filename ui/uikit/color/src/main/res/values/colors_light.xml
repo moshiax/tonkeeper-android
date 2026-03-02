@@ -8,8 +8,8 @@
     <color name="backgroundPageLight">#EFEEF3</color>
     <color name="backgroundTransparentLight">#F5FFFFFF</color>
     <color name="backgroundContentLight">#FFFFFF</color>
-    <color name="backgroundContentTintLight">#E7E6EB</color>
-    <color name="backgroundContentAttentionLight">#F0F0F0</color>
+    <color name="backgroundContentTintLight">#FFFFFF</color>
+    <color name="backgroundContentAttentionLight">#FFFFFF</color>
     <color name="backgroundHighlightedLight">#14818C99</color>
     <color name="backgroundOverlayStrongLight">#B8141414</color>
     <color name="backgroundOverlayLightLight">#7A141414</color>
@@ -23,14 +23,14 @@
     <color name="buttonPrimaryBackgroundHighlightedLight">#1F8AFF</color>
     <color name="buttonPrimaryForegroundLight">#FFFFFF</color>
 
-    <color name="buttonSecondaryBackgroundLight">#D3D4DB</color>
-    <color name="buttonSecondaryBackgroundDisabledLight">#D8D9E0</color>
-    <color name="buttonSecondaryBackgroundHighlightedLight">#C9CAD1</color>
+    <color name="buttonSecondaryBackgroundLight">#FFFFFF</color>
+    <color name="buttonSecondaryBackgroundDisabledLight">#FFFFFF</color>
+    <color name="buttonSecondaryBackgroundHighlightedLight">#FFFFFF</color>
     <color name="buttonSecondaryForegroundLight">#000000</color>
 
-    <color name="buttonTertiaryBackgroundLight">#D3D4DB</color>
-    <color name="buttonTertiaryBackgroundDisabledLight">#D8D9E0</color>
-    <color name="buttonTertiaryBackgroundHighlightedLight">#C9CAD1</color>
+    <color name="buttonTertiaryBackgroundLight">#FFFFFF</color>
+    <color name="buttonTertiaryBackgroundDisabledLight">#FFFFFF</color>
+    <color name="buttonTertiaryBackgroundHighlightedLight">#FFFFFF</color>
     <color name="buttonTertiaryForegroundLight">#000000</color>
 
     <color name="buttonGreenBackgroundLight">#25B86F</color>
@@ -41,7 +41,7 @@
     <color name="buttonOrangeBackgroundDisabledLight">#D68B2F</color>
     <color name="buttonOrangeBackgroundHighlightedLight">#FFC25E</color>
 
-    <color name="fieldBackgroundLight">#1F818C99</color>
+    <color name="fieldBackgroundLight">#FFFFFF</color>
     <color name="fieldActiveBorderLight">#007AFF</color>
     <color name="fieldErrorBorderLight">#FF3B30</color>
     <color name="fieldErrorBackgroundLight">#14FF3B30</color>

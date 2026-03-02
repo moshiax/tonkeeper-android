@@ -142,7 +142,7 @@ class SettingsRepository(
             }
         }
 
-    var theme: Theme = Theme.getByKey(prefs.getString(THEME_KEY, "blue")!!)
+    var theme: Theme = Theme.getByKey(prefs.getString(THEME_KEY, "dark")!!)
         set(value) {
             if (value != field) {
                 prefs.putString(THEME_KEY, value.key)

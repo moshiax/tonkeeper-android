@@ -8,9 +8,9 @@
 
     <color name="backgroundPageDark">#000000</color>
     <color name="backgroundTransparentDark">#F5000000</color>
-    <color name="backgroundContentDark">#17171A</color>
-    <color name="backgroundContentTintDark">#222224</color>
-    <color name="backgroundContentAttentionDark">#2F2F33</color>
+    <color name="backgroundContentDark">#000000</color>
+    <color name="backgroundContentTintDark">#000000</color>
+    <color name="backgroundContentAttentionDark">#000000</color>
     <color name="backgroundHighlightedDark">#0AFFFFFF</color>
     <color name="backgroundOverlayStrongDark">#B80F0F0F</color>
     <color name="backgroundOverlayLightDark">#7A0F0F0F</color>
@@ -26,14 +26,14 @@
     <color name="buttonPrimaryBackgroundHighlightedDark">#5BB8F6</color>
     <color name="buttonPrimaryForegroundDark">#FFFFFF</color>
 
-    <color name="buttonSecondaryBackgroundDark">#17171A</color>
-    <color name="buttonSecondaryBackgroundDisabledDark">#0E0E0F</color>
-    <color name="buttonSecondaryBackgroundHighlightedDark">#202024</color>
+    <color name="buttonSecondaryBackgroundDark">#000000</color>
+    <color name="buttonSecondaryBackgroundDisabledDark">#000000</color>
+    <color name="buttonSecondaryBackgroundHighlightedDark">#000000</color>
     <color name="buttonSecondaryForegroundDark">#FFFFFF</color>
 
-    <color name="buttonTertiaryBackgroundDark">#222224</color>
-    <color name="buttonTertiaryBackgroundDisabledDark">#18181A</color>
-    <color name="buttonTertiaryBackgroundHighlightedDark">#2A2A2E</color>
+    <color name="buttonTertiaryBackgroundDark">#000000</color>
+    <color name="buttonTertiaryBackgroundDisabledDark">#000000</color>
+    <color name="buttonTertiaryBackgroundHighlightedDark">#000000</color>
     <color name="buttonTertiaryForegroundDark">#FFFFFF</color>
 
     <color name="buttonGreenBackgroundDark">#39CC83</color>
@@ -44,7 +44,7 @@
     <color name="buttonOrangeBackgroundDisabledDark">#D68B2F</color>
     <color name="buttonOrangeBackgroundHighlightedDark">#FFC25E</color>
 
-    <color name="fieldBackgroundDark">#17171A</color>
+    <color name="fieldBackgroundDark">#000000</color>
     <color name="fieldActiveBorderDark">#45AEF5</color>
     <color name="fieldErrorBorderDark">#FF4766</color>
     <color name="fieldErrorBackgroundDark">#14FF4766</color>
