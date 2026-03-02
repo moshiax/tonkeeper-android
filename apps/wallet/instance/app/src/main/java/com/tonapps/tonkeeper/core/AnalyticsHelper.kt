@@ -53,11 +53,7 @@ class AnalyticsHelper(
     }
 
     private fun trackEvent(eventName: String, props: Map<String, Any> = hashMapOf()) {
-        if (isInitialized.get()) {
-            send(eventName, props)
-        } else {
-            eventQueue.offer(QueuedEvent(eventName, props))
-        }
+        return
     }
 
     private fun send(eventName: String, props: Map<String, Any> = hashMapOf()) {
@@ -82,11 +78,7 @@ class AnalyticsHelper(
     }
 
     fun setConfig(context: Context, config: ConfigEntity) {
-        initAptabase(
-            context = context,
-            appKey = config.aptabaseAppKey,
-            host = config.aptabaseEndpoint
-        )
+        return
     }
 
     private fun removePrivateDataFromUrl(url: String): String {

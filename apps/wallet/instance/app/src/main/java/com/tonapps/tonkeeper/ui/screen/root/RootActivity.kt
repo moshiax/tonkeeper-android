@@ -107,6 +107,7 @@ class RootActivity : BaseWalletActivity() {
     private lateinit var lockSignOut: View
     private lateinit var migrationLoaderContainer: View
     private lateinit var migrationLoaderIcon: View
+    private var lastLockScreenState: LockScreen.State? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val theme = settingsRepository.theme
@@ -187,12 +188,19 @@ class RootActivity : BaseWalletActivity() {
     }
 
     private suspend fun pinState(state: LockScreen.State) {
+        if (state != LockScreen.State.None && lastLockScreenState != state) {
+            lockPasscodeView.clear()
+        }
+
         if (state == LockScreen.State.None) {
             lockView.visibility = View.GONE
             lockPasscodeView.setSuccess()
         } else if (state == LockScreen.State.Error) {
             lockView.visibility = View.VISIBLE
             lockPasscodeView.setError()
+            lockPasscodeView.postDelayed({
+                lockPasscodeView.clear()
+            }, 350L)
         } else {
             lockView.visibility = View.VISIBLE
             if (passcodeManager.isBiometricRequest(this)) {
@@ -207,6 +215,8 @@ class RootActivity : BaseWalletActivity() {
                 }
             }
         }
+
+        lastLockScreenState = state
     }
 
     private fun createOrGetViewModel(): RootViewModel {
