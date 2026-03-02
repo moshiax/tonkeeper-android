@@ -8,7 +8,7 @@ import android.os.StrictMode
 import android.util.Log
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
-import com.google.firebase.FirebaseApp
+import com.tonapps.extensions.CrashReporter
 import com.tonapps.extensions.setLocales
 import com.tonapps.icu.CurrencyFormatter
 import com.tonapps.tonkeeper.koin.koinModel
@@ -69,7 +69,7 @@ class App: Application(), CameraXConfig.Provider, KoinComponent {
         super.onCreate()
         updateThemes()
 
-        FirebaseApp.initializeApp(this)
+        CrashReporter.install(this)
 
         instance = this
 

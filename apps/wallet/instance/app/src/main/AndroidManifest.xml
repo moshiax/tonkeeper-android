@@ -201,22 +201,6 @@
                 android:name="autoStoreLocales"
                 android:value="true" />
         </service>
-        <service
-            android:name="com.tonapps.tonkeeper.manager.push.FirebasePush"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/constantBlue" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_push" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_push_channel_id" />
         <meta-data
             android:name="com.ton_keeper.BUILD_TYPE"
             android:value="${build_type}" />

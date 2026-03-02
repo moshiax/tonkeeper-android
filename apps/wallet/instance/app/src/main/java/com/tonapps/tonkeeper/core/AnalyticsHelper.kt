@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.annotation.UiThread
 import com.aptabase.Aptabase
 import com.aptabase.InitOptions
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.tonapps.extensions.CrashReporter
 import com.tonapps.blockchain.ton.TonAddressTags
 import com.tonapps.extensions.hostOrNull
 import com.tonapps.extensions.toUriOrNull
@@ -405,7 +405,7 @@ class AnalyticsHelper(
                 processEventQueue()
             }
         } catch (e: Throwable) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            CrashReporter.recordException(e)
         }
     }
 }

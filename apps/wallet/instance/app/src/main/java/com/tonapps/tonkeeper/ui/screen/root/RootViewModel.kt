@@ -11,16 +11,7 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.google.android.play.core.appupdate.AppUpdateInfo
-import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.firebase.Firebase
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.crashlytics.setCustomKeys
+import com.tonapps.extensions.CrashReporter
 import com.tonapps.blockchain.ton.extensions.equalsAddress
 import com.tonapps.blockchain.ton.extensions.toAccountId
 import com.tonapps.extensions.MutableEffectFlow
@@ -59,7 +50,6 @@ import com.tonapps.tonkeeper.manager.tonconnect.TonConnectManager
 import com.tonapps.tonkeeper.manager.tonconnect.bridge.model.BridgeError
 import com.tonapps.tonkeeper.manager.tonconnect.bridge.model.SignDataRequestPayload
 import com.tonapps.tonkeeper.ui.base.BaseWalletVM
-import com.tonapps.tonkeeper.ui.component.UpdateAvailableDialog
 import com.tonapps.tonkeeper.ui.screen.add.AddWalletScreen
 import com.tonapps.tonkeeper.ui.screen.backup.main.BackupScreen
 import com.tonapps.tonkeeper.ui.screen.battery.BatteryScreen
@@ -147,10 +137,6 @@ class RootViewModel(
 ): BaseWalletVM(app) {
 
     private val savedState = RootModelState(savedStateHandle)
-
-    private val appUpdateManager: AppUpdateManager by lazy {
-        AppUpdateManagerFactory.create(context)
-    }
 
     private val selectedWalletFlow: Flow<WalletEntity> = accountRepository.selectedWalletFlow
 
@@ -280,32 +266,7 @@ class RootViewModel(
                 showStories(config.stories)
             }
         }.launch()
-
-        viewModelScope.launch(Dispatchers.IO) {
-            if (environment.isGooglePlayServicesAvailable) {
-                delay(2000)
-                checkAppUpdate()
-            }
-        }
-
-        apkManager.statusFlow.filter {
-            it is APKManager.Status.UpdateAvailable
-        }.collectFlow {
-            delay(1000)
-            showUpdateAvailable(it as APKManager.Status.UpdateAvailable)
-        }
     }
-
-    private fun showUpdateAvailable(status: APKManager.Status.UpdateAvailable) {
-        try {
-            UpdateAvailableDialog(context, apkManager).show {
-                apkManager.download(status.apk)
-            }
-        } catch (e: Throwable) {
-            FirebaseCrashlytics.getInstance().recordException(e)
-        }
-    }
-
     private suspend fun showStories(storiesIds: List<String>) = withContext(Dispatchers.IO) {
         val firstStoryId = storiesIds.firstOrNull { !settingsRepository.isStoriesViewed(it) } ?: return@withContext
         showStory(firstStoryId, "wallet")
@@ -315,28 +276,6 @@ class RootViewModel(
         val stories = api.getStories(id) ?: return@withContext
         openScreen(RemoteStoriesScreen.newInstance(stories, from))
     }
-
-    private suspend fun checkAppUpdate() = withContext(Dispatchers.IO) {
-        try {
-            val updateInfo = appUpdateManager.appUpdateInfo.await()
-            if (updateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
-                startUpdateFlow(updateInfo)
-            }
-        } catch (e: Throwable) {
-            FirebaseCrashlytics.getInstance().recordException(e)
-        }
-    }
-
-    private suspend fun startUpdateFlow(appUpdateInfo: AppUpdateInfo) = withContext(Dispatchers.Main) {
-        val activity = context.activity ?: return@withContext
-        appUpdateManager.startUpdateFlowForResult(
-            appUpdateInfo,
-            activity,
-            AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE),
-            0
-        )
-    }
-
     fun connectTonConnectBridge() {
         tonConnectManager.connectBridge()
     }
@@ -356,7 +295,7 @@ class RootViewModel(
                 signRequest(eventId, tx.connection, signRequest)
             }
         } catch (e: Throwable) {
-            FirebaseCrashlytics.getInstance().recordException(e)
+            CrashReporter.recordException(e)
             tonConnectManager.sendBridgeError(tx.connection, BridgeError.unknown(e.bestMessage), eventId)
         }
 

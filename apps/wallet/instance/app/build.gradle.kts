@@ -80,12 +80,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.flexbox)
 
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.config)
-    implementation(libs.firebase.crashlytics)
-    implementation(libs.firebase.messaging)
-    implementation(libs.firebase.performance)
 
     implementation(project(ProjectModules.Module.tonApi))
     implementation(project(ProjectModules.Module.blur))
@@ -108,7 +102,6 @@ dependencies {
 
     implementation(libs.google.play.review)
     implementation(libs.google.play.billing)
-    implementation(libs.google.play.update)
     implementation(libs.google.play.installreferrer)
 
     implementation(libs.okhttp)
